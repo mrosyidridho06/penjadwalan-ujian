@@ -18,5 +18,6 @@
         </div>
     </div>
     @include('layouts.partials.javascript')
+    @include('sweetalert::alert')
 </body>
 </html>

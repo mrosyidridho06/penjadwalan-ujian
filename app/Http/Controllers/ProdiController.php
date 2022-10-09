@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Prodi;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ProdiController extends Controller
 {
@@ -16,7 +17,7 @@ class ProdiController extends Controller
     {
         $prodi = Prodi::get();
 
-        return view('master.master_prodi.index', compact('prodi'));
+        return view('master.prodi.index', compact('prodi'));
     }
 
     /**
@@ -44,6 +45,7 @@ class ProdiController extends Controller
             'jurusan' => $request->jurusan
         ]);
 
+        Alert::toast('Data Berhasil Ditambah', 'success');
         return redirect()->back();
     }
 
@@ -88,6 +90,7 @@ class ProdiController extends Controller
         $prodi->jurusan = $request->jurusan;
         $prodi->save();
 
+        Alert::toast('Data Berhasil Diupdate', 'success');
         return redirect()->back();
     }
 
@@ -100,6 +103,7 @@ class ProdiController extends Controller
     public function destroy(Prodi $prodi)
     {
         $prodi->delete();
+        Alert::toast('Data Berhasil Dihapus', 'warning');
         return redirect()->back();
     }
 }

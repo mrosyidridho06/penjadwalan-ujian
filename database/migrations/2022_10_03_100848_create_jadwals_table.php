@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddLoginFieldsToUsersTable extends Migration
+class CreateJadwalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class AddLoginFieldsToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('last_login_at')->nullable();
-            $table->string('last_login_ip')->nullable();
+        Schema::create('jadwals', function (Blueprint $table) {
+            $table->id();
+            $table->date('tanggal');
+            $table->time('waktu_awal');
+            $table->time('waktu_akhir');
+            $table->timestamps();
         });
     }
 
@@ -26,8 +29,6 @@ class AddLoginFieldsToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('jadwals');
     }
 }

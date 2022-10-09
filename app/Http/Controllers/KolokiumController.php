@@ -14,7 +14,7 @@ class KolokiumController extends Controller
      */
     public function index()
     {
-        //
+        return view('mahasiswa.kolokium.index');
     }
 
     /**

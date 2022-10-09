@@ -14,7 +14,7 @@ class NaskahSkripsiController extends Controller
      */
     public function index()
     {
-        //
+        return view('mahasiswa.ujian_naskah.index');
     }
 
     /**

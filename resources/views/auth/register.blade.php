@@ -25,6 +25,41 @@
 
                 <x-input id="email" class="" type="email" name="email" :value="old('email')" required />
             </div>
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="nim" :value="__('Nim')" />
+
+                <x-input id="nim" class="" type="text" name="nim" :value="old('nim')" required />
+            </div>
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="prodi" :value="__('Prodi')" />
+                <select name="prodi" id="prodi" class="form-control">
+                    <option value="" selected>Pilih Prodi</option>
+                    @foreach ($prodi as $item)
+                    <option value="{{ $item->id }}">{{ $item->jurusan }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="angkatan" :value="__('Angkatan')" />
+                <select name="angkatan" class="form-control">
+                    <option>Select Year</option>
+                    <option>2015</option>
+                    <option>2016</option>
+                    <option>2017</option>
+                    <option>2018</option>
+                    <option>2019</option>
+                    <option>2020</option>
+                </select>
+            </div>
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="alamat" :value="__('Alamat')" />
+
+                <x-input id="alamat" class="" type="alamat" name="alamat" :value="old('alamat')" required />
+            </div>
 
             <!-- Password -->
             <div class="mt-4">

@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Rules\Password;
+use App\Models\User;
 use App\Models\Dosen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Validation\Rules\Password as RulesPassword;
 
 class DosenController extends Controller
 {
@@ -14,7 +20,9 @@ class DosenController extends Controller
      */
     public function index()
     {
-        //
+        $dosen = Dosen::with('user')->get();
+
+        return view('master.dosen.index', compact('dosen'));
     }
 
     /**
@@ -35,7 +43,33 @@ class DosenController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string',
+            'nip' => 'required|max:20',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', RulesPassword::defaults()],
+            'jabatan' => 'required',
+            'alamat' => 'required',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'last_login_at' => Carbon::now(),
+            'last_login_ip' => $request->getClientIp(),
+            'role' => 'dosen'
+        ]);
+
+        Dosen::create([
+            'nip' => $request->nip,
+            'alamat' => $request->alamat,
+            'jabatan' => $request->jabatan,
+            'user_id' => $user->id,
+        ]);
+
+        Alert::toast('Data Berhasil Ditambah', 'success');
+        return redirect()->back();
     }
 
     /**

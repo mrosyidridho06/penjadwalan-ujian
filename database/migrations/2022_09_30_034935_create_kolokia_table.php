@@ -13,7 +13,7 @@ class CreateKolokiaTable extends Migration
      */
     public function up()
     {
-        Schema::create('kolokia', function (Blueprint $table) {
+        Schema::create('kolokium', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });

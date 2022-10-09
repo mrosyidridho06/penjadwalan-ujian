@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Mahasiswa;
+use App\Models\Prodi;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
@@ -21,7 +23,9 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+        $prodi = Prodi::get();
+
+        return view('auth.register', compact('prodi'));
     }
 
     /**
@@ -38,6 +42,9 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'nim' => ['required', 'max:11'],
+            'angkatan' => ['required'],
+            'prodi' => ['required'],
         ]);
 
         $user = User::create([
@@ -46,7 +53,19 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'last_login_at' => Carbon::now(),
             'last_login_ip' => $request->getClientIp(),
+            'role' => 'mahasiswa'
         ]);
+
+        // dd($user->id);
+
+        Mahasiswa::create([
+            'nim' => $request->nim,
+            'angkatan' => $request->angkatan,
+            'alamat' => $request->alamat,
+            'prodi_id' => $request->prodi,
+            'user_id' => $user->id,
+        ]);
+
 
         event(new Registered($user));
 

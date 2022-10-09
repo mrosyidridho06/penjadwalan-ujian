@@ -1,11 +1,14 @@
 <?php
 
-use App\Http\Controllers\KolokiumController;
-use App\Http\Controllers\NaskahSkripsiController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DosenController;
 use App\Http\Controllers\ProdiController;
+use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\KolokiumController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\UjianSarjanaController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NaskahSkripsiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,11 +30,20 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::resource('/prodi', ProdiController::class);
-    Route::resource('/sempro', ProposalController::class);
-    Route::resource('/skripsi', NaskahSkripsiController::class);
-    Route::resource('/ujiansarjana', UjianSarjanaController::class);
-    Route::resource('/kolokium', KolokiumController::class);
+
+    Route::group(['middleware' => 'cekrole:admin'], function () {
+        Route::resource('/prodi', ProdiController::class);
+        Route::resource('/dosen', DosenController::class);
+        Route::resource('/jadwal', JadwalController::class);
+        Route::resource('/ruangan', RuanganController::class);
+    });
+
+    Route::group(['middleware', 'cekrole: dosen, mahasiswa'], function () {
+        Route::resource('/sempro', ProposalController::class);
+        Route::resource('/skripsi', NaskahSkripsiController::class);
+        Route::resource('/ujiansarjana', UjianSarjanaController::class);
+        Route::resource('/kolokium', KolokiumController::class);
+    });
 });
 
 require __DIR__.'/auth.php';

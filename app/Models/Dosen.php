@@ -8,4 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Dosen extends Model
 {
     use HasFactory;
+
+    protected $table = 'dosens';
+    protected $fillable = ['nip', 'nama', 'alamat', 'jabatan', 'user_id'];
+
+    public function proposal()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

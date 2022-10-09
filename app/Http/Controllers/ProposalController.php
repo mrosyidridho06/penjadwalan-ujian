@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dosen;
+use App\Models\Jadwal;
 use App\Models\Proposal;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ProposalController extends Controller
 {
@@ -15,8 +20,11 @@ class ProposalController extends Controller
     public function index()
     {
         $sempro = Proposal::get();
+        $jadwal = Jadwal::get();
+        $ruang = Ruangan::get();
+        $dosen = Dosen::with('user')->get();
 
-        return view('mahasiswa.proposal.index', compact('sempro'));
+        return view('mahasiswa.proposal.index', compact('sempro', 'dosen', 'jadwal', 'ruang'));
     }
 
     /**
@@ -37,7 +45,27 @@ class ProposalController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'iduser' => 'required',
+            'judul' => 'required',
+            'draft' => 'required|file|mimes:pdf,doc,docx|max:10024',
+            'dospem' => 'required',
+        ]);
+
+
+        $draft = date('Ymd'). '-' . Auth::user()->name . '.' . $request->draft->extension();
+        $request->file('draft')->move('ujian/draft_proposal', $draft);
+
+        Proposal::create([
+            'user_id' => $request->iduser,
+            'judul' => $request->judul,
+            'dosen_id' => $request->dospem,
+            'draft' => $draft,
+        ]);
+
+        Alert::toast('Data Berhasil Dikirim', 'success');
+        return redirect()->back();
+
     }
 
     /**
@@ -82,6 +110,8 @@ class ProposalController extends Controller
      */
     public function destroy(Proposal $proposal)
     {
-        //
+        $proposal->delete();
+
+        return redirect()->back();
     }
 }
