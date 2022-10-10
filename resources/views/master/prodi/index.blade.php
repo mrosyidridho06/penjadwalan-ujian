@@ -5,42 +5,40 @@
     <div class="section-header">
         <h1>Program Studi</h1>
     </div>
-    <div class="container">
-        <div class="card">
-            <div class="card-header d-flex justify-content-end">
-                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fas fa-plus"></i> Tambah Prodi
-                </button>
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Program Studi</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($prodi as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->jurusan }}</td>
-                            <td>
-                                <div class="form-inline">
-                                    <button class="btn btn-primary editButton" data-toggle="modal" data-target="#editModal" value="{{ $item->id}}"><i class="fa fa-edit"></i> Edit</button>
-                                    <form class="mx-2" action="{{ route('prodi.destroy', $item->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-end">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
+                <i class="fas fa-plus"></i> Tambah Prodi
+            </button>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Program Studi</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($prodi as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->jurusan }}</td>
+                        <td>
+                            <div class="form-inline">
+                                <button class="btn btn-primary editButton" data-toggle="modal" data-target="#editModal" value="{{ $item->id}}"><i class="fa fa-edit"></i> Edit</button>
+                                <form class="mx-2" action="{{ route('prodi.destroy', $item->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

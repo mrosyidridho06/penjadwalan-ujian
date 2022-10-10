@@ -22,4 +22,9 @@ class Dosen extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function mahasiswa()
+    {
+        return $this->hasManyThrough(Mahasiswa::class, User::class);
+    }
+
 }

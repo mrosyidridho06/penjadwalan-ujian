@@ -2,13 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DosenController;
-use App\Http\Controllers\ProdiController;
+use App\Http\Controllers\InternalJudulController;
+use App\Http\Controllers\InternalProseduralController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\KelayakanDataController;
+use App\Http\Controllers\KemajuanPenelitianController;
+use App\Http\Controllers\MetodePenelitianController;
+use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\RuanganController;
-use App\Http\Controllers\KolokiumController;
-use App\Http\Controllers\ProposalController;
-use App\Http\Controllers\UjianSarjanaController;
 use App\Http\Controllers\NaskahSkripsiController;
+use App\Http\Controllers\PembimbinganNaskahController;
+use App\Http\Controllers\SesiController;
+use App\Http\Controllers\SidangNaskahSkripsiController;
+use App\Http\Controllers\TinjauanPustakaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,16 +40,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['middleware' => 'cekrole:admin'], function () {
         Route::resource('/prodi', ProdiController::class);
         Route::resource('/dosen', DosenController::class);
+        Route::resource('/sesi', SesiController::class);
         Route::resource('/jadwal', JadwalController::class);
         Route::resource('/ruangan', RuanganController::class);
     });
 
     Route::group(['middleware', 'cekrole: dosen, mahasiswa'], function () {
-        Route::resource('/sempro', ProposalController::class);
-        Route::resource('/skripsi', NaskahSkripsiController::class);
-        Route::resource('/ujiansarjana', UjianSarjanaController::class);
-        Route::resource('/kolokium', KolokiumController::class);
+        Route::resource('/internal-judul', InternalJudulController::class);
+        Route::resource('/metode-penelitian', MetodePenelitianController::class);
+        Route::resource('/tinjauan-pustaka', TinjauanPustakaController::class);
+        Route::resource('/pembimbingan-naskah', PembimbinganNaskahController::class);
+        Route::resource('/internal-prosedural', InternalProseduralController::class);
+        Route::resource('/kemajuan-penelitian', KemajuanPenelitianController::class);
+        Route::resource('/kelayakan-data', KelayakanDataController::class);
+        Route::resource('/sidangnaskah-skripsi', SidangNaskahSkripsiController::class);
+        Route::resource('/ujiannaskah-skripsi', NaskahSkripsiController::class);
     });
+
+    Route::post('/sertifikat-interjudul', [InternalJudulController::class, 'sertifikat'])->name('sertifikat.interjudul');
 });
 
 require __DIR__.'/auth.php';

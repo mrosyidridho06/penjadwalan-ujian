@@ -11,4 +11,9 @@ class Ruangan extends Model
 
     protected $table = 'ruangans';
     protected $fillable = ['name', 'status'];
+
+    public function internalJudul()
+    {
+        return $this->hasMany(InternalJudul::class);
+    }
 }

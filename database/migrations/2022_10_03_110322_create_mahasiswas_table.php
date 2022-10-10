@@ -18,6 +18,8 @@ class CreateMahasiswasTable extends Migration
             $table->string('nim')->unique();
             $table->year('angkatan');
             $table->string('alamat');
+            $table->foreignId('dospem_satu')->constrained('dosens')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('dospem_dua')->constrained('dosens')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('prodi_id')->constrained('prodis')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();

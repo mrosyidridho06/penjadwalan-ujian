@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dosen;
 use App\Models\Mahasiswa;
 use App\Models\Prodi;
 use App\Models\User;
@@ -24,8 +25,9 @@ class RegisteredUserController extends Controller
     public function create()
     {
         $prodi = Prodi::get();
+        $dosen = Dosen::with('user')->get();
 
-        return view('auth.register', compact('prodi'));
+        return view('auth.register', compact('prodi', 'dosen'));
     }
 
     /**
@@ -42,9 +44,11 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'nim' => ['required', 'max:11'],
+            'nim' => ['required', 'digits:10'],
             'angkatan' => ['required'],
             'prodi' => ['required'],
+            'dospem_satu' => ['required'],
+            'dospem_dua' => ['required'],
         ]);
 
         $user = User::create([
@@ -63,6 +67,8 @@ class RegisteredUserController extends Controller
             'angkatan' => $request->angkatan,
             'alamat' => $request->alamat,
             'prodi_id' => $request->prodi,
+            'dospem_satu' => $request->dospem_satu,
+            'dospem_dua' => $request->dospem_dua,
             'user_id' => $user->id,
         ]);
 

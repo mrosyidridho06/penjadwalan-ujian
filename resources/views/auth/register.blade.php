@@ -43,6 +43,26 @@
             </div>
             <!-- Email Address -->
             <div class="mt-4">
+                <x-label for="dosen" :value="__('Dosen Pembimbing Utama')" />
+                <select name="dospem_satu" id="dosen" class="form-control">
+                    <option value="" selected>Pilih Dosen</option>
+                    @foreach ($dosen as $item)
+                    <option value="{{ $item->id }}">{{ $item->user->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="dosen" :value="__('Dosen Pembimbing Pendamping')" />
+                <select name="dospem_dua" id="dosen" class="form-control">
+                    <option value="" selected>Pilih Dosen</option>
+                    @foreach ($dosen as $item)
+                    <option value="{{ $item->id }}">{{ $item->user->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!-- Email Address -->
+            <div class="mt-4">
                 <x-label for="angkatan" :value="__('Angkatan')" />
                 <select name="angkatan" class="form-control">
                     <option>Select Year</option>

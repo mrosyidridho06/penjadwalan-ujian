@@ -5,41 +5,39 @@
     <div class="section-header">
         <h1>Dosen</h1>
     </div>
-    <div class="container">
-        <div class="card">
-            <div class="card-header d-flex justify-content-end">
-                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fas fa-plus"></i> Tambah Dosen
-                </button>
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table table-hover" id="myTable">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>NIP</th>
-                            <th>Jabatan</th>
-                            <th>Alamat</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($dosen as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->user->name  }}</td>
-                            <td>{{ $item->user->email  }}</td>
-                            <td>{{ $item->nip }}</td>
-                            <td>{{ $item->jabatan }}</td>
-                            <td>{{ $item->alamat }}</td>
-                            <td>{{ $item->user->role }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-end">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
+                <i class="fas fa-plus"></i> Tambah Dosen
+            </button>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-hover" id="myTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>NIP</th>
+                        <th>Jabatan</th>
+                        <th>Alamat</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($dosen as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->user->name  }}</td>
+                        <td>{{ $item->user->email  }}</td>
+                        <td>{{ $item->nip }}</td>
+                        <td>{{ $item->jabatan }}</td>
+                        <td>{{ $item->alamat }}</td>
+                        <td>{{ $item->user->role }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -54,7 +52,7 @@
           </button>
         </div>
         <div class="modal-body">
-            {{-- @if ($errors->any())
+            @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
@@ -62,7 +60,7 @@
                         @endforeach
                     </ul>
                 </div>
-            @endif --}}
+            @endif
             <form action="{{ route('dosen.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">

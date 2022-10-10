@@ -11,4 +11,9 @@ class Prodi extends Model
 
     protected $table = 'prodis';
     protected $fillable = ['jurusan'];
+
+    public function mahasiswa()
+    {
+        return $this->hasMany(Mahasiswa::class);
+    }
 }

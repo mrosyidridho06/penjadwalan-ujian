@@ -17,6 +17,7 @@ class CreateProposalsTable extends Migration
             $table->id();
             $table->string('judul');
             $table->string('draft');
+            $table->date('tanggal');
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('dosen_id')->constrained('dosens')->onDelete('restrict')->onUpdate('cascade');
             $table->enum('status', ['menunggu', 'disetujui', 'ditolak', 'revisi'])->default('menunggu');
