@@ -20,18 +20,47 @@
                     {!! $internalJudul->judul !!}
                 </div>
                 <br>
-                @if ($internalJudul->where('mahasiswa_id', auth()->user()->mahasiswa->id))
-                {{ Auth::user()->name }}
+                @if(auth()->check())
+                    @if (auth()->user()->role == 'mahasiswa')
+                        @if ($internalJudul->where('mahasiswa_id', auth()->user()->mahasiswa->id))
+                        <label for="ruangan_id">Ruangan</label>
+                        <select name="ruangan" class="form-control">
+                            @foreach ($ruangan as $itemruang)
+                                @if ($internalJudul->ruangan_id == $itemruang->id)
+                                <option value="{{ $itemruang->id }}" selected>{{ $itemruang->name }}</option>
+                                @else
+                                <option value="{{ $itemruang->id }}">{{ $itemruang->name }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <br>
+                        <label for="tanggal">Tanggal</label>
+                        <input type="date" class="form-control" name="tanggal" value="{{ $internalJudul->tanggal }}">
+                        <br>
+                        <label for="sesi_id">Sesi</label>
+                        <select name="sesi" class="form-control">
+                            @foreach ($sesi as $itemsesi)
+                                @if ($internalJudul->sesi_id == $itemsesi->id)
+                                <option value="{{ $itemsesi->id }}" selected>{{ $itemsesi->sesi }} {{ $itemsesi->jam_awal }}-{{ $itemsesi->jam_akhir }}</option>
+                                @else
+                                <option value="{{ $itemsesi->id }}">{{ $itemsesi->sesi }} {{ $itemsesi->jam_awal }}-{{ $itemsesi->jam_akhir }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <br>
+                        @endif
+                    @else
+                    <label for="ruangan_id">Ruangan</label>
+                    <input type="text" value="{{ $internalJudul->ruangan->name }}" class="form-control" readonly>
+                    <br>
+                    <label for="tanggal">Tanggal</label>
+                    <input type="date" class="form-control" name="tanggal" value="{{ $internalJudul->tanggal }}" readonly>
+                    <br>
+                    <label for="sesi_id">Sesi</label>
+                    <input type="text" class="form-control" value="{{ $internalJudul->sesi->sesi }} {{ $internalJudul->sesi->jam_awal }}-{{ $internalJudul->sesi->jam_akhir }}" readonly>
+                    <br>
+                    @endif
                 @endif
-                <label for="ruangan_id">Ruangan</label>
-                <input type="text" value="{{ $internalJudul->ruangan->name }}" class="form-control" readonly>
-                <br>
-                <label for="tanggal">Tanggal</label>
-                <input type="date" class="form-control" name="tanggal" value="{{ $internalJudul->tanggal }}" readonly>
-                <br>
-                <label for="sesi_id">Sesi</label>
-                <input type="text" class="form-control" value="{{ $internalJudul->sesi->sesi }} {{ $internalJudul->sesi->jam_awal }}-{{ $internalJudul->sesi->jam_akhir }}" readonly>
-                <br>
                 <label for="draft">Draft</label>
                 <div class="form-control">
                     <a href="{{ asset("/skripsi1/internal_judul/" . $internalJudul->draft) }}" target="_blank">{{ $internalJudul->draft }}</a>

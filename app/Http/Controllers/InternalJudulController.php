@@ -8,7 +8,9 @@ use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Http\Request;
 use App\Models\InternalJudul;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class InternalJudulController extends Controller
@@ -20,10 +22,19 @@ class InternalJudulController extends Controller
      */
     public function index()
     {
-        if(auth()->user()->role == 'admin' || auth()->user()->role == 'dosen'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospem', 'sesi', 'ruangan')->get();
+        if(auth()->user()->role == 'dosen'){
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->whereHas('mahasiswa', function ($query){
+                                            $query->where('dospem_satu', Auth::user()->dosen->id);
+                                        })
+                                        ->orWhereHas('mahasiswa', function ($query){
+                                            $query->where('dospem_dua', Auth::user()->dosen->id);
+                                        })
+                                        ->get();
+        }elseif(auth()->user()->role == 'mahasiswa'){
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
         }else{
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospem', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
         }
 
         return view('mahasiswa.internal_judul.index', compact('interjudul'));
@@ -72,7 +83,7 @@ class InternalJudulController extends Controller
         ]);
 
         Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('index');
+        return redirect()->route('internal-judul.index');
     }
 
     /**
@@ -105,8 +116,10 @@ class InternalJudulController extends Controller
             }
         }
 
+        $ruangan = Ruangan::get();
+        $sesi = Sesi::get();
 
-        return view('mahasiswa.internal_judul.edit', compact('internalJuduls'));
+        return view('mahasiswa.internal_judul.edit', compact('internalJuduls', 'ruangan', 'sesi'));
     }
 
     /**
@@ -117,6 +130,23 @@ class InternalJudulController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, InternalJudul $internalJudul)
+    {
+        $request->validate([
+            'status' => 'required'
+        ]);
+
+
+        $internalJudul->update([
+            'status' => $request->status,
+        ]);
+
+        Alert::toast('Data Berhasil Diupdate', 'success');
+
+        return redirect()->route('internal-judul.index');
+
+    }
+
+    public function updateMahasiswa(Request $request, InternalJudul $internalJudul)
     {
         $request->validate([
             'status' => 'required'
@@ -155,6 +185,8 @@ class InternalJudulController extends Controller
         $ruangan = $request->ruangan;
         $tanggal = $request->tanggal;
         $sesi = $request->sesi;
+        $dospem_satu = $request->dospem_satu;
+        $dospem_dua = $request->dospem_dua;
 
         // To add a page
         $pdf->AddPage();
@@ -237,7 +269,7 @@ class InternalJudulController extends Controller
         $pdf->SetFont('Times','','8');
         $pdf->SetY(101);
         $pdf->SetX(42);
-        $pdf->Cell(10, 5, $prodi, 0, 1, 'L');
+        $pdf->MultiCell(100, 5, $prodi, 0, 'L');
 
         //Tanggal
         $pdf->SetFont('Times','','8');
@@ -245,6 +277,17 @@ class InternalJudulController extends Controller
         $pdf->SetX(93);
         $pdf->Cell(10, 5, Carbon::parse($tanggal)->translatedFormat('l d F Y'), 0, 1, 'L');
 
+        //Dospem1
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(168);
+        $pdf->SetX(16.5);
+        $pdf->Cell(10, 5, $dospem_satu, 0, 1, 'L');
+
+        //Dospem2
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(168);
+        $pdf->SetX(84);
+        $pdf->Cell(10, 5, $dospem_dua, 0, 1, 'L');
 
         // Because I is for preview for browser.
         return $pdf->Output('I', 'sertif'.'.pdf', true);

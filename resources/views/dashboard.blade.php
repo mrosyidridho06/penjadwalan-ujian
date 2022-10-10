@@ -67,5 +67,21 @@
                 </div>
             </div>
         </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Judul</th>
+                        <th>Dosen Pembimbing Utama</th>
+                        <th>Dosen Pembimbing Pendamping</th>
+                        <th>Tanggal</th>
+                        <th>Ruangan</th>
+                        <th>Jam</th>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 @endsection

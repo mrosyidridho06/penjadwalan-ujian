@@ -31,13 +31,6 @@
                         <th>Draft</th>
                         <th>Status</th>
                         <th>Action</th>
-                        {{-- @if (auth()->check())
-                            @if (auth()->user()->role == 'dosen')
-                            <th>
-                                Action
-                            </th>
-                            @endif
-                        @endif --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -45,8 +38,8 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{!! $item->judul !!}</td>
-                        <td>{{ $item->mahasiswa->dospem_satu }}</td>
-                        <td>{{ $item->mahasiswa->dospem_dua }}</td>
+                        <td>{{ $item->mahasiswa->dospemSatu->user->name }}</td>
+                        <td>{{ $item->mahasiswa->dospemDua->user->name }}</td>
                         <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                         <td>{{ $item->ruangan->name }}</td>
                         <td>{{ $item->sesi->sesi }} {{ $item->sesi->jam_awal }}-{{ $item->sesi->jam_akhir }}</td>
@@ -80,6 +73,8 @@
                                         <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
                                         <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
                                         <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                        <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                        <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
                                         <button class="btn btn-primary" type="submit" target="_blank">Download</button>
                                     </form>
                                 </td>
@@ -95,12 +90,14 @@
                                             <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
                                             <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
                                             <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                            <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                            <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
                                             <button class="btn btn-primary" type="submit" target="_blank">Download</button>
                                         </form>
                                     </td>
                                 @elseif ($item->status == 'ditolak')
                                 <td>
-                                    <a href="{{ route('internal-judul.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-info-circle"></i></a>
+                                    <a href="{{ route('internal-judul.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                                 </td>
                                 @else
                                 <td>

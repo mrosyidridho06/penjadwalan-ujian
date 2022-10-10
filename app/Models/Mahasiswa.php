@@ -18,9 +18,14 @@ class Mahasiswa extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function dospem()
+    public function dospemSatu()
     {
-        return $this->belongsTo(Dosen::class);
+        return $this->belongsTo(Dosen::class, 'dospem_satu');
+    }
+
+    public function dospemDua()
+    {
+        return $this->belongsTo(Dosen::class, 'dospem_dua');
     }
 
     public function internalJudul()

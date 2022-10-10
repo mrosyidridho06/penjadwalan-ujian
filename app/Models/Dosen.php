@@ -24,7 +24,7 @@ class Dosen extends Model
 
     public function mahasiswa()
     {
-        return $this->hasManyThrough(Mahasiswa::class, User::class);
+        return $this->hasMany(Mahasiswa::class);
     }
 
 }
