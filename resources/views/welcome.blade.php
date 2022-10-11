@@ -37,32 +37,6 @@
             @endif
 
             <div class="max-w-6xl sm:px-6 lg:px-8">
-                <table>
-                    <thead>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Judul</th>
-                        <th>Dosen Pembimbing Utama</th>
-                        <th>Dosen Pembimbing Pendamping</th>
-                        <th>Tanggal</th>
-                        <th>Ruangan</th>
-                        <th>Jam</th>
-                    </thead>
-                    <tbody>
-                        @foreach ($InternalJudul as $itemij)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $itemij->mahasiswa->user->name }}</td>
-                                <td>{!! $itemij->judul !!}</td>
-                                <td>{{ $itemij->mahasiswa->dospemSatu->user->name }}</td>
-                                <td>{{ $itemij->mahasiswa->dospemDua->user->name }}</td>
-                                <td>{{ Carbon\Carbon::parse($itemij->tanggal)->translatedFormat('l, d F Y') }}</td>
-                                <td>{{ $itemij->ruangan->name }}</td>
-                                <td>{{ $itemij->sesi->sesi }} {{ $itemij->sesi->jam_awal }}-{{ $itemij->sesi->jam_akhir }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
         </div>
     </body>

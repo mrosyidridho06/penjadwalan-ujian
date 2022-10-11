@@ -8,10 +8,11 @@ use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Http\Request;
 use App\Models\InternalJudul;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\StatusInternalJudul;
+use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Database\Eloquent\Builder;
 
 class InternalJudulController extends Controller
 {
@@ -23,7 +24,7 @@ class InternalJudulController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -32,9 +33,10 @@ class InternalJudulController extends Controller
                                         })
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            // dd($interjudul);
         }else{
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')->get();
         }
 
         return view('mahasiswa.internal_judul.index', compact('interjudul'));
@@ -73,13 +75,18 @@ class InternalJudulController extends Controller
         $draft = Auth::user()->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
         $request->file('draft')->move('skripsi1/internal_judul', $draft);
 
-        InternalJudul::create([
+        $itj = InternalJudul::create([
             'mahasiswa_id' => $request->iduser,
             'judul' => $request->judul,
             'tanggal' => $request->tanggal,
             'sesi_id' => $request->sesi_id,
             'ruangan_id' => $request->ruangan_id,
             'draft' => $draft,
+        ]);
+        StatusInternalJudul::create([
+            'status_dospem1' => 'menunggu',
+            'status_dospem2' => 'menunggu',
+            'internal_judul_id' => $itj->id,
         ]);
 
         Alert::toast('Data Berhasil Dikirim', 'success');
@@ -103,23 +110,25 @@ class InternalJudulController extends Controller
      * @param  \App\Models\InternalJudul  $internalJudul
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(InternalJudul $internalJudul)
     {
-        // $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospem', 'sesi', 'ruangan')->find($internalJudul);
-        if(auth()->check()){
-            if(auth()->user()->role == 'dosen' || auth()->user()->role == 'admin'){
-                $internalJuduls = InternalJudul::with('mahasiswa', 'sesi', 'ruangan')->where('id', $id)->get();
-            }elseif(auth()->user()->role == 'mahasiswa'){
-                $internalJuduls = InternalJudul::with('mahasiswa', 'sesi', 'ruangan')->where('mahasiswa_id', Auth::user()->mahasiswa->id)->where('id', $id)->get();
-            }else{
-                abort(404);
-            }
+        if($internalJudul->mahasiswa_id != auth()->user()->mahasiswa->id){
+            return redirect()->back();
         }
 
         $ruangan = Ruangan::get();
         $sesi = Sesi::get();
 
-        return view('mahasiswa.internal_judul.edit', compact('internalJuduls', 'ruangan', 'sesi'));
+        return view('mahasiswa.internal_judul.edit', compact('internalJudul', 'ruangan', 'sesi'));
+    }
+
+    public function editDosen($id)
+    {
+        $internalJudul = InternalJudul::find($id);
+
+        // $internalJuduls = InternalJudul::find($id);
+
+        return view('dosen.internal_judul.edit', compact('internalJudul'));
     }
 
     /**
@@ -129,16 +138,39 @@ class InternalJudulController extends Controller
      * @param  \App\Models\InternalJudul  $internalJudul
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, InternalJudul $internalJudul)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required'
-        ]);
+        $internalJudul = InternalJudul::find($id);
 
+        $request->validate([
+            'ruangan_id' => 'required',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+        ]);
 
         $internalJudul->update([
-            'status' => $request->status,
+            'ruangan_id' => $request->ruangan_id,
+            'sesi_id' => $request->sesi_id,
+            'tanggal' => $request->tanggal,
         ]);
+
+        if($internalJudul->statusInternalJudul->status_dospem1 == 'ditolak' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'disetujui'){
+            StatusInternalJudul::where('id', $internalJudul->id)
+                                ->update([
+                                    'status_dospem1' => 'menunggu'
+                                ]);
+        }elseif($internalJudul->statusInternalJudul->status_dospem1 == 'disetujui' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'ditolak'){
+            StatusInternalJudul::where('id', $internalJudul->id)->
+                                update([
+                                    'status_dospem2' => 'menunggu'
+                                ]);
+        }else{
+            StatusInternalJudul::where('id', $internalJudul->id)
+                                ->update([
+                                    'status_dospem1' => 'menunggu',
+                                    'status_dospem2' => 'menunggu'
+                                ]);
+        }
 
         Alert::toast('Data Berhasil Diupdate', 'success');
 
@@ -146,15 +178,19 @@ class InternalJudulController extends Controller
 
     }
 
-    public function updateMahasiswa(Request $request, InternalJudul $internalJudul)
+    public function updateDosen(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required'
+            'status_dospem1' => 'required',
+            'status_dospem2' => 'required',
         ]);
 
+        $status = StatusInternalJudul::find($id);
+        // dd($status);
 
-        $internalJudul->update([
-            'status' => $request->status,
+        $status->update([
+            'status_dospem1' => $request->status_dospem1,
+            'status_dospem2' => $request->status_dospem2,
         ]);
 
         Alert::toast('Data Berhasil Diupdate', 'success');
@@ -194,7 +230,7 @@ class InternalJudulController extends Controller
         // set the source file
         // Below is the path of pdf in which you going to print details.
         //  Right now i had blank pdf
-        $path = public_path("/skripsi1/internal_judul/BA/BA Sidang Internal Judul.pdf");
+        $path = public_path("/skripsi1/internal_judul/BA/BA Sidang Internal Judul1.pdf");
 
         // Set path
         $pdf->setSourceFile($path);
@@ -250,8 +286,8 @@ class InternalJudulController extends Controller
         //Hari
         $pdf->SetFont('Times','','8');
         $pdf->SetY(51);
-        $pdf->SetX(30);
-        $pdf->Cell(10, 5, $ruangan, 0, 1, 'L');
+        $pdf->SetX(43);
+        $pdf->Cell(10, 5, $ruangan, 0, 1, 'C');
 
         //Nama
         $pdf->SetFont('Times','','8');
@@ -269,7 +305,13 @@ class InternalJudulController extends Controller
         $pdf->SetFont('Times','','8');
         $pdf->SetY(101);
         $pdf->SetX(42);
-        $pdf->MultiCell(100, 5, $prodi, 0, 'L');
+        $pdf->Cell(10, 5, $prodi, 0, 1, 'L');
+
+        // judul
+        // $pdf->SetFont('Times','','8');
+        // $pdf->SetY(101);
+        // $pdf->SetX(42);
+        // $pdf->MultiCell(100, 5, 'Pengembangan materi dan metode pelatihan pasien simulasi sebagai evaluasi KIE obat Rinitis alergi mahasiswa Farmasi Universitas X', 0, 'L');
 
         //Tanggal
         $pdf->SetFont('Times','','8');

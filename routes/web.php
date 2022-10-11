@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DosenController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InternalJudulController;
 use App\Http\Controllers\InternalProseduralController;
 use App\Http\Controllers\JadwalController;
@@ -27,9 +28,7 @@ use App\Http\Controllers\TinjauanPustakaController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -55,6 +54,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/kelayakan-data', KelayakanDataController::class);
         Route::resource('/sidangnaskah-skripsi', SidangNaskahSkripsiController::class);
         Route::resource('/ujiannaskah-skripsi', NaskahSkripsiController::class);
+    });
+    Route::group(['middleware', 'cekrole: dosen'], function (){
+        Route::get('/status-internal-judul/{id}/edit', [InternalJudulController::class, 'editDosen'])->name('statusinternal.edit');
+        Route::put('/status-internal-judul/{id}', [InternalJudulController::class, 'updateDosen'])->name('statusinternal.update');
     });
 
     Route::post('/sertifikat-interjudul', [InternalJudulController::class, 'sertifikat'])->name('sertifikat.interjudul');

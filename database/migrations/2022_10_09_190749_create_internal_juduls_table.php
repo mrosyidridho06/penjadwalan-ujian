@@ -20,8 +20,7 @@ class CreateInternalJudulsTable extends Migration
             $table->date('tanggal');
             $table->foreignId('mahasiswa_id')->constrained('mahasiswas')->onDelete('restrict')->onUpdate('cascade');
             $table->foreignId('sesi_id')->constrained('sesis')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('ruangan_id')->constrained('sesis')->onDelete('restrict')->onUpdate('cascade');
-            $table->enum('status', ['menunggu', 'disetujui', 'ditolak', 'revisi'])->default('menunggu');
+            $table->foreignId('ruangan_id')->constrained('ruangans')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

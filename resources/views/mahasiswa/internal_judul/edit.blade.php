@@ -6,7 +6,6 @@
         <h1>Sidang Internal Judul</h1>
     </div>
     <div class="card">
-        @foreach ($internalJuduls as $internalJudul)
         <div class="card-body table-responsive">
         <form action="{{ route('internal-judul.update', $internalJudul->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
@@ -24,7 +23,7 @@
                     @if (auth()->user()->role == 'mahasiswa')
                         @if ($internalJudul->where('mahasiswa_id', auth()->user()->mahasiswa->id))
                         <label for="ruangan_id">Ruangan</label>
-                        <select name="ruangan" class="form-control">
+                        <select name="ruangan_id" class="form-control">
                             @foreach ($ruangan as $itemruang)
                                 @if ($internalJudul->ruangan_id == $itemruang->id)
                                 <option value="{{ $itemruang->id }}" selected>{{ $itemruang->name }}</option>
@@ -38,7 +37,7 @@
                         <input type="date" class="form-control" name="tanggal" value="{{ $internalJudul->tanggal }}">
                         <br>
                         <label for="sesi_id">Sesi</label>
-                        <select name="sesi" class="form-control">
+                        <select name="sesi_id" class="form-control">
                             @foreach ($sesi as $itemsesi)
                                 @if ($internalJudul->sesi_id == $itemsesi->id)
                                 <option value="{{ $itemsesi->id }}" selected>{{ $itemsesi->sesi }} {{ $itemsesi->jam_awal }}-{{ $itemsesi->jam_akhir }}</option>
@@ -83,7 +82,6 @@
         </form>
         <a href="{{ route('internal-judul.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
-    @endforeach
     </div>
 </div>
 @endsection
