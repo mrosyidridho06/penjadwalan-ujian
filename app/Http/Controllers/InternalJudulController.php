@@ -154,23 +154,25 @@ class InternalJudulController extends Controller
             'tanggal' => $request->tanggal,
         ]);
 
-        if($internalJudul->statusInternalJudul->status_dospem1 == 'ditolak' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'disetujui'){
-            StatusInternalJudul::where('id', $internalJudul->id)
-                                ->update([
-                                    'status_dospem1' => 'menunggu'
-                                ]);
-        }elseif($internalJudul->statusInternalJudul->status_dospem1 == 'disetujui' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'ditolak'){
-            StatusInternalJudul::where('id', $internalJudul->id)->
-                                update([
-                                    'status_dospem2' => 'menunggu'
-                                ]);
-        }else{
-            StatusInternalJudul::where('id', $internalJudul->id)
+        StatusInternalJudul::where('id', $internalJudul->id)
                                 ->update([
                                     'status_dospem1' => 'menunggu',
                                     'status_dospem2' => 'menunggu'
                                 ]);
-        }
+
+        // if($internalJudul->statusInternalJudul->status_dospem1 == 'ditolak' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'disetujui'){
+        //     StatusInternalJudul::where('id', $internalJudul->id)
+        //                         ->update([
+        //                             'status_dospem1' => 'menunggu'
+        //                         ]);
+        // }elseif($internalJudul->statusInternalJudul->status_dospem1 == 'disetujui' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'ditolak'){
+        //     StatusInternalJudul::where('id', $internalJudul->id)->
+        //                         update([
+        //                             'status_dospem2' => 'menunggu'
+        //                         ]);
+        // }else{
+
+        // }
 
         Alert::toast('Data Berhasil Diupdate', 'success');
 

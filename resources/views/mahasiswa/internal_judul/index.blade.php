@@ -68,16 +68,12 @@
                         @if (auth()->check())
                             @if (auth()->user()->role == 'dosen')
                                 @if (auth()->user()->dosen->id == $item->mahasiswa->dospem_satu)
-                                    @if ($item->statusInternalJudul->status_dospem1 == 'menunggu')
+                                    @if ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
                                     <td style="text-align: center">
                                         <a href="{{ route('statusinternal.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-info-circle"></i></a>
                                     </td>
-                                    @elseif ($item->statusInternalJudul->status_dospem1 == 'ditolak')
+                                    @elseif ($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
                                     <td style="text-align: center">
-                                        -
-                                    </td>
-                                    @elseif ($item->statusInternalJudul->status_dospem2 == 'menunggu')
-                                    <td>
                                         -
                                     </td>
                                     @else
@@ -97,11 +93,11 @@
                                     </td>
                                     @endif
                                 @elseif (auth()->user()->dosen->id == $item->mahasiswa->dospem_dua)
-                                    @if ($item->statusInternalJudul->status_dospem2 == 'menunggu')
+                                    @if ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'menunggu')
                                     <td style="text-align: center">
                                         <a href="{{ route('statusinternal.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-info-circle"></i></a>
                                     </td>
-                                    @elseif ($item->statusInternalJudul->status_dospem2 == 'ditolak')
+                                    @elseif ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'ditolak' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
                                     <td style="text-align: center">
                                         -
                                     </td>
@@ -123,40 +119,53 @@
                                     @endif
                                 @endif
                             @elseif(auth()->user()->role == 'mahasiswa')
-                                @if ($item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'disetujui')
-                                    <td>
-                                        <form action="{{ route('sertifikat.interjudul') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
-                                            <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
-                                            <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
-                                            <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
-                                            <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
-                                            <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
-                                            <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
-                                            <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
-                                            <button class="btn btn-primary" type="submit" target="_blank">Download</button>
-                                        </form>
-                                    </td>
-                                @elseif ($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui')
+                                @if($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
                                 <td>
                                     <a href="{{ route('internal-judul.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                                 </td>
-                                @elseif ($item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
-                                <td>
-                                    <a href="{{ route('internal-judul.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
-                                </td>
-                                @elseif ($item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'menunggu')
-                                <td>
-                                    -
-                                </td>
-                                @elseif ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'disetujui')
+                                @elseif ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'disetujui')
                                 <td>
                                     -
                                 </td>
                                 @else
                                 <td>
+                                    <form action="{{ route('sertifikat.interjudul') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
+                                        <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                        <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
+                                        <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
+                                        <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
+                                        <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                        <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                        <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
+                                        <button class="btn btn-primary" type="submit" target="_blank">Download</button>
+                                    </form>
+                                </td>
+                                @endif
+                            @else
+                                @if($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
+                                <td>
+                                -
+                                </td>
+                                @elseif ($item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'disetujui')
+                                <td>
                                     -
+                                </td>
+                                @else
+                                <td>
+                                    <form action="{{ route('sertifikat.interjudul') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
+                                        <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                        <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
+                                        <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
+                                        <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
+                                        <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                        <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                        <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
+                                        <button class="btn btn-primary" type="submit" target="_blank">Download</button>
+                                    </form>
                                 </td>
                                 @endif
                             @endif

@@ -1,6 +1,5 @@
 <script src="{{ asset('assets/modules/jquery.min.js') }}"></script>
 
-<script src="{{ asset('flex/vendor/aos/aos.css') }}"></script>
 <script src="{{ asset('flex/vendor/purecounter/purecounter.js') }}"></script>
 <script src="{{ asset('flex/vendor/aos/aos.js') }}"></script>
 <script src="{{ asset('flex/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

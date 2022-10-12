@@ -22,7 +22,7 @@
             <h2>Jadwal Sidang</h2>
             <p>Sidang Internal Judul</p>
         </header>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-hover" id="table-internaljudul">
                 <thead>
                     <th>No</th>
@@ -35,7 +35,7 @@
                     <th>Jam</th>
                 </thead>
                 <tbody>
-                    @forelse ($InternalJudul as $itemij)
+                    @foreach ($InternalJudul as $itemij)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $itemij->mahasiswa->user->name }}</td>
@@ -46,9 +46,40 @@
                         <td>{{ $itemij->ruangan->name }}</td>
                         <td>{{ $itemij->sesi->sesi }} {{ $itemij->sesi->jam_awal }}-{{ $itemij->sesi->jam_akhir }}</td>
                     </tr>
-                    @empty
-                    Data Kosong
-                    @endforelse
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="container">
+        <header class="section-header">
+            <p>Sidang Internal Penelitian</p>
+        </header>
+        <div class="card-body table-responsive">
+            <table class="table table-hover" id="table-internalpenelitian">
+                <thead>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Judul</th>
+                    <th>Dosen Pembimbing Utama</th>
+                    <th>Dosen Pembimbing Pendamping</th>
+                    <th>Tanggal</th>
+                    <th>Ruangan</th>
+                    <th>Jam</th>
+                </thead>
+                <tbody>
+                    @foreach ($InternalJudul as $itemij)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $itemij->mahasiswa->user->name }}</td>
+                        <td>{!! $itemij->judul !!}</td>
+                        <td>{{ $itemij->mahasiswa->dospemSatu->user->name }}</td>
+                        <td>{{ $itemij->mahasiswa->dospemDua->user->name }}</td>
+                        <td>{{ Carbon\Carbon::parse($itemij->tanggal)->translatedFormat('l, d F Y') }}</td>
+                        <td>{{ $itemij->ruangan->name }}</td>
+                        <td>{{ $itemij->sesi->sesi }} {{ $itemij->sesi->jam_awal }}-{{ $itemij->sesi->jam_akhir }}</td>
+                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -59,6 +90,9 @@
 <script>
     $(document).ready( function () {
         $('#table-internaljudul').DataTable();
+    } );
+    $(document).ready( function () {
+        $('#table-internalpenelitian').DataTable();
     } );
 </script>
 @endpush
