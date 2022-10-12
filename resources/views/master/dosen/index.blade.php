@@ -81,7 +81,7 @@
                     @enderror
                     <br>
                     <label for="nip">NIP</label>
-                    <input type="text" name="nip" class="form-control @error('nip') is-invalid @enderror" value="{{ old('nip') }}">
+                    <input type="text" name="nip" class="form-control @error('nip') is-invalid @enderror" value="{{ old('nip') }}" maxlength="20">
                     @error('nip')
                         <div class="alert alert-danger mt-2">
                             {{ $message }}

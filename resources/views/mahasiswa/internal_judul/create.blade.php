@@ -15,7 +15,12 @@
                     @endforeach
                 </ul>
             </div>
-        @endif
+            @endif
+            @if ($message = Session::has('success'))
+                <div class="alert alert-warning">
+                    {{ $message }}
+                </div>
+            @endif
         <form action="{{ route('internal-judul.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
@@ -24,7 +29,7 @@
                 <input type="text" class="form-control" name="nama" value="{{ Auth::user()->name }}" readonly>
                 <br>
                 <label for="judul">Judul</label>
-                <textarea class="summernote-simple" name="judul">{{ old('judul') }}</textarea>
+                <textarea class="form-control" name="judul">{{ old('judul') }}</textarea>
                 @error('judul')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}
@@ -49,7 +54,7 @@
                 @enderror
                 <br>
                 <label for="tanggal">Tanggal</label>
-                <input type="date" class="form-control" name="tanggal">
+                <input type="date" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}">
                 @error('tanggal')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}

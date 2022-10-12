@@ -26,7 +26,7 @@
                 <br>
                 <label for="judul">Judul</label>
                 <div class="form-control" readonly>
-                    {!! $internalJudul->judul !!}
+                    {{  $internalJudul->judul  }}
                 </div>
                 <br>
                 <label for="ruangan_id">Ruangan</label>

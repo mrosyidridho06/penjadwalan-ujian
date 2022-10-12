@@ -151,7 +151,7 @@
                                         <div class="form-group col-6">
                                             <div class="form-group">
                                                 <label for="nim">NIM</label>
-                                                <input id="nim" type="nim" class="form-control" value="{{ old('nim') }}" name="nim" required>
+                                                <input id="nim" type="text" class="form-control" value="{{ old('nim') }}" name="nim" required maxlength="10">
                                             </div>
                                         </div>
                                     </div>
@@ -180,13 +180,13 @@
                                         <div class="form-group col-6">
                                             <label>Angkatan</label>
                                             <select class="form-control selectric" name="angkatan" required>
-                                                <option>Select Year</option>
-                                                <option>2015</option>
-                                                <option>2016</option>
-                                                <option>2017</option>
-                                                <option>2018</option>
-                                                <option>2019</option>
-                                                <option>2020</option>
+                                                <?php
+                                                $year = date('Y');
+                                                $min = $year - 10;
+                                                $max = $year;
+                                                for( $i=$max; $i>=$min; $i-- ) {
+                                                echo '<option value='.$i.'>'.$i.'</option>';
+                                                } ?>
                                             </select>
                                         </div>
                                     </div>

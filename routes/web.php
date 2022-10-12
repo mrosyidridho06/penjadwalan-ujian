@@ -30,11 +30,7 @@ use App\Http\Controllers\TinjauanPustakaController;
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
-Route::group(['middleware' => ['auth','cekRole:mahasiswa,dosen']], function () {
+Route::group(['middleware' => ['auth','cekRole:mahasiswa,dosen,admin']], function () {
     Route::resource('/internal-judul', InternalJudulController::class);
     Route::resource('/metode-penelitian', MetodePenelitianController::class);
     Route::resource('/tinjauan-pustaka', TinjauanPustakaController::class);
@@ -61,6 +57,10 @@ Route::group(['middleware' =>['auth', 'cekRole:dosen']], function (){
 
 Route::group(['middleware' => 'auth'], function () {
     Route::post('/sertifikat-interjudul', [InternalJudulController::class, 'sertifikat'])->name('sertifikat.interjudul');
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
 });
 
 require __DIR__.'/auth.php';

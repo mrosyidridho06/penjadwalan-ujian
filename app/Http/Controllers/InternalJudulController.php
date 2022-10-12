@@ -11,6 +11,7 @@ use App\Models\InternalJudul;
 use Illuminate\Support\Facades\DB;
 use App\Models\StatusInternalJudul;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -52,6 +53,7 @@ class InternalJudulController extends Controller
         $sesi = Sesi::get();
         $ruang = Ruangan::get();
 
+
         return view('mahasiswa.internal_judul.create', compact('sesi', 'ruang'));
     }
 
@@ -72,25 +74,43 @@ class InternalJudulController extends Controller
             'ruangan_id' => 'required',
         ]);
 
-        $draft = Auth::user()->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
-        $request->file('draft')->move('skripsi1/internal_judul', $draft);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        $itj = InternalJudul::create([
-            'mahasiswa_id' => $request->iduser,
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'sesi_id' => $request->sesi_id,
-            'ruangan_id' => $request->ruangan_id,
-            'draft' => $draft,
-        ]);
-        StatusInternalJudul::create([
-            'status_dospem1' => 'menunggu',
-            'status_dospem2' => 'menunggu',
-            'internal_judul_id' => $itj->id,
-        ]);
+        if(InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+                            }
+        else{
+            $draft = Auth::user()->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+            $request->file('draft')->move('skripsi1/internal_judul', $draft);
 
-        Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('internal-judul.index');
+            $itj = InternalJudul::create([
+                'mahasiswa_id' => $request->iduser,
+                'judul' => $request->judul,
+                'tanggal' => $request->tanggal,
+                'sesi_id' => $request->sesi_id,
+                'ruangan_id' => $request->ruangan_id,
+                'draft' => $draft,
+            ]);
+            StatusInternalJudul::create([
+                'status_dospem1' => 'menunggu',
+                'status_dospem2' => 'menunggu',
+                'internal_judul_id' => $itj->id,
+            ]);
+
+            Alert::toast('Data Berhasil Dikirim', 'success');
+            return redirect()->route('internal-judul.index');
+        }
+
     }
 
     /**
@@ -140,43 +160,52 @@ class InternalJudulController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $internalJudul = InternalJudul::find($id);
-
         $request->validate([
             'ruangan_id' => 'required',
             'sesi_id' => 'required',
             'tanggal' => 'required',
+            'draft' => 'file|mimes:pdf,doc,docx|max:10024'
         ]);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        $internalJudul->update([
-            'ruangan_id' => $request->ruangan_id,
-            'sesi_id' => $request->sesi_id,
-            'tanggal' => $request->tanggal,
-        ]);
+        if(InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+        }else{
+            $internalJudul = InternalJudul::with('mahasiswa')->find($id);
+            $interjudul = $request->all();
 
-        StatusInternalJudul::where('id', $internalJudul->id)
-                                ->update([
-                                    'status_dospem1' => 'menunggu',
-                                    'status_dospem2' => 'menunggu'
-                                ]);
+            if($draft = $request->file('draft')) {
+                File::delete('skripsi1/internal_judul'.$internalJudul->draft);
+                $destinationPath = 'skripsi1/internal_judul';
+                $filename = $internalJudul->mahasiswa->user->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+                $draft->move($destinationPath, $filename);
+                $interjudul['draft'] = "$filename";
+            }else{
+                unset($interjudul['draft']);
+            }
 
-        // if($internalJudul->statusInternalJudul->status_dospem1 == 'ditolak' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'disetujui'){
-        //     StatusInternalJudul::where('id', $internalJudul->id)
-        //                         ->update([
-        //                             'status_dospem1' => 'menunggu'
-        //                         ]);
-        // }elseif($internalJudul->statusInternalJudul->status_dospem1 == 'disetujui' &&  $internalJudul->statusInternalJudul->status_dospem2 == 'ditolak'){
-        //     StatusInternalJudul::where('id', $internalJudul->id)->
-        //                         update([
-        //                             'status_dospem2' => 'menunggu'
-        //                         ]);
-        // }else{
+            $internalJudul->update($interjudul);
 
-        // }
+            StatusInternalJudul::where('id', $internalJudul->id)
+                                    ->update([
+                                        'status_dospem1' => 'menunggu',
+                                        'status_dospem2' => 'menunggu'
+                                    ]);
 
-        Alert::toast('Data Berhasil Diupdate', 'success');
+            Alert::toast('Data Berhasil Diupdate', 'success');
 
-        return redirect()->route('internal-judul.index');
+            return redirect()->route('internal-judul.index');
+        }
 
     }
 
@@ -223,6 +252,7 @@ class InternalJudulController extends Controller
         $ruangan = $request->ruangan;
         $tanggal = $request->tanggal;
         $sesi = $request->sesi;
+        $judul = $request->judul;
         $dospem_satu = $request->dospem_satu;
         $dospem_dua = $request->dospem_dua;
 
@@ -311,9 +341,9 @@ class InternalJudulController extends Controller
 
         // judul
         // $pdf->SetFont('Times','','8');
-        // $pdf->SetY(101);
+        // $pdf->SetY(102);
         // $pdf->SetX(42);
-        // $pdf->MultiCell(100, 5, 'Pengembangan materi dan metode pelatihan pasien simulasi sebagai evaluasi KIE obat Rinitis alergi mahasiswa Farmasi Universitas X', 0, 'L');
+        // $pdf->MultiCell(100, 4, $judul, 0, 'L');
 
         //Tanggal
         $pdf->SetFont('Times','','8');
@@ -322,13 +352,13 @@ class InternalJudulController extends Controller
         $pdf->Cell(10, 5, Carbon::parse($tanggal)->translatedFormat('l d F Y'), 0, 1, 'L');
 
         //Dospem1
-        $pdf->SetFont('Times','','8');
+        $pdf->SetFont('Times','B','8');
         $pdf->SetY(168);
         $pdf->SetX(16.5);
         $pdf->Cell(10, 5, $dospem_satu, 0, 1, 'L');
 
         //Dospem2
-        $pdf->SetFont('Times','','8');
+        $pdf->SetFont('Times','B','8');
         $pdf->SetY(168);
         $pdf->SetX(84);
         $pdf->Cell(10, 5, $dospem_dua, 0, 1, 'L');

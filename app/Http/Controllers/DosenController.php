@@ -45,7 +45,7 @@ class DosenController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'nip' => 'required|max:20',
+            'nip' => 'required|digits:20|numeric',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', RulesPassword::defaults()],
             'jabatan' => 'required',

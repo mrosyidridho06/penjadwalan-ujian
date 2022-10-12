@@ -40,7 +40,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->mahasiswa->user->name }}</td>
-                        <td>{!! $item->judul !!}</td>
+                        <td>{{  $item->judul  }}</td>
                         <td>{{ $item->mahasiswa->dospemSatu->user->name }}</td>
                         <td>{{ $item->mahasiswa->dospemDua->user->name }}</td>
                         <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
@@ -107,6 +107,7 @@
                                             @csrf
                                             <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
                                             <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                            <input type="hidden" name="judul" value="{!! $item->judul !!}">
                                             <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
                                             <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
                                             <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
@@ -119,7 +120,7 @@
                                     @endif
                                 @endif
                             @elseif(auth()->user()->role == 'mahasiswa')
-                                @if($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
+                                @if($item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'disetujui' || $item->statusInternalJudul->status_dospem1 == 'disetujui' && $item->statusInternalJudul->status_dospem2 == 'ditolak' || $item->statusInternalJudul->status_dospem1 == 'ditolak' && $item->statusInternalJudul->status_dospem2 == 'menunggu' || $item->statusInternalJudul->status_dospem1 == 'menunggu' && $item->statusInternalJudul->status_dospem2 == 'ditolak')
                                 <td>
                                     <a href="{{ route('internal-judul.edit', $item->id) }}" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                                 </td>
@@ -133,6 +134,7 @@
                                         @csrf
                                         <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
                                         <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                        <input type="hidden" name="judul" value="{{ $item->judul }}">
                                         <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
                                         <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
                                         <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
