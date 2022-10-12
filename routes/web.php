@@ -36,7 +36,7 @@ Route::get('/dashboard', function () {
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::group(['middleware' => 'cekrole:admin'], function () {
+    Route::group(['middleware' => 'cekRole:admin'], function () {
         Route::resource('/prodi', ProdiController::class);
         Route::resource('/dosen', DosenController::class);
         Route::resource('/sesi', SesiController::class);
@@ -44,7 +44,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/ruangan', RuanganController::class);
     });
 
-    Route::group(['middleware', 'cekrole: dosen, mahasiswa'], function () {
+    Route::group(['middleware', 'cekRole:dosen,mahasiswa'], function () {
         Route::resource('/internal-judul', InternalJudulController::class);
         Route::resource('/metode-penelitian', MetodePenelitianController::class);
         Route::resource('/tinjauan-pustaka', TinjauanPustakaController::class);
@@ -55,7 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('/sidangnaskah-skripsi', SidangNaskahSkripsiController::class);
         Route::resource('/ujiannaskah-skripsi', NaskahSkripsiController::class);
     });
-    Route::group(['middleware', 'cekrole: dosen'], function (){
+    Route::group(['middleware', 'cekRole:dosen'], function (){
         Route::get('/status-internal-judul/{id}/edit', [InternalJudulController::class, 'editDosen'])->name('statusinternal.edit');
         Route::put('/status-internal-judul/{id}', [InternalJudulController::class, 'updateDosen'])->name('statusinternal.update');
     });
