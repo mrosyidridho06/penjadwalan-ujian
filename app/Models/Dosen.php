@@ -12,19 +12,24 @@ class Dosen extends Model
     protected $table = 'dosens';
     protected $fillable = ['nip', 'nama', 'alamat', 'jabatan', 'user_id'];
 
-    public function proposal()
-    {
-        return $this->hasMany(Proposal::class);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    public function proposal()
+    {
+        return $this->hasMany(Proposal::class);
+    }
+
     public function mahasiswa()
     {
         return $this->hasMany(Mahasiswa::class);
+    }
+
+    public function naskahSkripsi()
+    {
+        return $this->hasManyThrough(NaskahSkripsi::class, 'penguji1', 'penguji2', 'penguji3');
     }
 
 }

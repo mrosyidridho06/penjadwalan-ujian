@@ -25,19 +25,19 @@ class InternalJudulController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
                                         ->orWhereHas('mahasiswa', function ($query){
                                             $query->where('dospem_dua', Auth::user()->dosen->id);
                                         })
+                                        ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
-            // dd($interjudul);
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
         }else{
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')->get();
+            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
         }
 
         return view('mahasiswa.internal_judul.index', compact('interjudul'));
@@ -100,11 +100,6 @@ class InternalJudulController extends Controller
                 'sesi_id' => $request->sesi_id,
                 'ruangan_id' => $request->ruangan_id,
                 'draft' => $draft,
-            ]);
-            StatusInternalJudul::create([
-                'status_dospem1' => 'menunggu',
-                'status_dospem2' => 'menunggu',
-                'internal_judul_id' => $itj->id,
             ]);
 
             Alert::toast('Data Berhasil Dikirim', 'success');
@@ -196,12 +191,6 @@ class InternalJudulController extends Controller
 
             $internalJudul->update($interjudul);
 
-            StatusInternalJudul::where('id', $internalJudul->id)
-                                    ->update([
-                                        'status_dospem1' => 'menunggu',
-                                        'status_dospem2' => 'menunggu'
-                                    ]);
-
             Alert::toast('Data Berhasil Diupdate', 'success');
 
             return redirect()->route('internal-judul.index');
@@ -214,14 +203,6 @@ class InternalJudulController extends Controller
         $request->validate([
             'status_dospem1' => 'required',
             'status_dospem2' => 'required',
-        ]);
-
-        $status = StatusInternalJudul::find($id);
-        // dd($status);
-
-        $status->update([
-            'status_dospem1' => $request->status_dospem1,
-            'status_dospem2' => $request->status_dospem2,
         ]);
 
         Alert::toast('Data Berhasil Diupdate', 'success');
@@ -364,6 +345,132 @@ class InternalJudulController extends Controller
         $pdf->Cell(10, 5, $dospem_dua, 0, 1, 'L');
 
         // Because I is for preview for browser.
-        return $pdf->Output('I', 'sertif'.'.pdf', true);
+        return $pdf->Output('D', 'Berita Acara Sidang Internal Judul_'.$nama.''.'.pdf', true);
+    }
+
+    public function undangan(Request $request)
+    {
+        $pdf = new Fpdi();
+
+
+        $nama = $request->nama;
+        $nim = $request->nim;
+        $prodi = $request->prodi;
+        $ruangan = $request->ruangan;
+        $tanggal = $request->tanggal;
+        $sesi = $request->sesi;
+        $judul = $request->judul;
+        $dospem_satu = $request->dospem_satu;
+        $dospem_dua = $request->dospem_dua;
+
+        // To add a page
+        $pdf->AddPage();
+
+        // set the source file
+        // Below is the path of pdf in which you going to print details.
+        //  Right now i had blank pdf
+        $path = public_path("/skripsi1/internal_judul/BA/BA Sidang Internal Judul1.pdf");
+
+        // Set path
+        $pdf->setSourceFile($path);
+
+        // import page 1
+        // define page number
+        // if you want to print detail in page to you have to write 2 instead of 1.
+        // right now we have only one page pdf.
+
+        $tplId = $pdf->importPage(1);
+        // use the imported page and place it at point 10,10 with a width of 100 mm
+        $pdf->useTemplate($tplId, null, null, null, 210, true);
+
+        // Now this details we are going to print in pdf.
+        // Horizontal and veritcal setXY
+
+
+        // $pdf->SetXY(120, 90);
+        // Details you want to print
+
+       // let's bring another below it
+
+        //Hari
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(47);
+        $pdf->SetX(35);
+        $pdf->Cell(15, 5, Carbon::parse($tanggal)->translatedFormat('l'), 0, 1, 'L');
+
+        //Hari
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(47);
+        $pdf->SetX(55);
+        $pdf->Cell(15, 5, Carbon::parse($tanggal)->translatedFormat('d'), 0, 1, 'L');
+
+        //Hari
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(47);
+        $pdf->SetX(70);
+        $pdf->Cell(15, 5, Carbon::parse($tanggal)->translatedFormat('F'), 0, 1, 'L');
+
+        //Hari
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(47);
+        $pdf->SetX(92);
+        $pdf->Cell(10, 5, Carbon::parse($tanggal)->translatedFormat('Y'), 0, 1, 'L');
+
+        //Sesi
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(47);
+        $pdf->SetX(109);
+        $pdf->Cell(10, 5, Carbon::parse($sesi)->translatedFormat('H:i'), 0, 1, 'L');
+
+        //Hari
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(51);
+        $pdf->SetX(43);
+        $pdf->Cell(10, 5, $ruangan, 0, 1, 'C');
+
+        //Nama
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(93);
+        $pdf->SetX(42);
+        $pdf->Cell(10, 5, $nama, 0, 1, 'L');
+
+        //NIM
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(97);
+        $pdf->SetX(42);
+        $pdf->Cell(10, 5, $nim, 0, 1, 'L');
+
+        //Prodi
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(101);
+        $pdf->SetX(42);
+        $pdf->Cell(10, 5, $prodi, 0, 1, 'L');
+
+        // judul
+        // $pdf->SetFont('Times','','8');
+        // $pdf->SetY(102);
+        // $pdf->SetX(42);
+        // $pdf->MultiCell(100, 4, $judul, 0, 'L');
+
+        //Tanggal
+        $pdf->SetFont('Times','','8');
+        $pdf->SetY(142);
+        $pdf->SetX(93);
+        $pdf->Cell(10, 5, Carbon::parse($tanggal)->translatedFormat('l d F Y'), 0, 1, 'L');
+
+        //Dospem1
+        $pdf->SetFont('Times','B','8');
+        $pdf->SetY(168);
+        $pdf->SetX(16.5);
+        $pdf->Cell(10, 5, $dospem_satu, 0, 1, 'L');
+
+        //Dospem2
+        $pdf->SetFont('Times','B','8');
+        $pdf->SetY(168);
+        $pdf->SetX(84);
+        $pdf->Cell(10, 5, $dospem_dua, 0, 1, 'L');
+
+        // Because I is for preview for browser.
+        return $pdf->Output('D', 'Berita Acara Sidang Internal Judul_'.$nama.''.'.pdf', true);
     }
 }

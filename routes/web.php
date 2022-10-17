@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\HomeController;
@@ -50,16 +51,19 @@ Route::group(['middleware' => ['auth', 'cekRole:admin']], function () {
     Route::resource('/ruangan', RuanganController::class);
 });
 
-Route::group(['middleware' =>['auth', 'cekRole:dosen']], function (){
-    Route::get('/status-internal-judul/{id}/edit', [InternalJudulController::class, 'editDosen'])->name('statusinternal.edit');
-    Route::put('/status-internal-judul/{id}', [InternalJudulController::class, 'updateDosen'])->name('statusinternal.update');
-});
-
 Route::group(['middleware' => 'auth'], function () {
     Route::post('/sertifikat-interjudul', [InternalJudulController::class, 'sertifikat'])->name('sertifikat.interjudul');
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::post('/ba-metpen', [MetodePenelitianController::class, 'berita'])->name('ba.metpen');
+    Route::post('/ba-tipus', [TinjauanPustakaController::class, 'berita'])->name('ba.tipus');
+    Route::post('/ba-pn', [PembimbinganNaskahController::class, 'berita'])->name('ba.pn');
+    Route::post('/ba-internalprosedural', [InternalProseduralController::class, 'berita'])->name('ba.prosedural');
+    Route::post('/ba-kemajuan', [KemajuanPenelitianController::class, 'berita'])->name('ba.kemajuan');
+    Route::post('/ba-kelayakan', [KelayakanDataController::class, 'berita'])->name('ba.kelayakan');
+    Route::post('/ba-sidangnaskah', [SidangNaskahSkripsiController::class, 'berita'])->name('ba.sidangnaskah');
+    Route::post('/undangan-uns', [NaskahSkripsiController::class, 'undangan'])->name('undangan.uns');
+
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 });
 

@@ -7,7 +7,7 @@
               <img src="{{ asset('images/unmul.png') }}" alt="img">
               <span>SIPEDAS</span>
             </a>
-            <p>Sistem Penjadwalan Sidang Farmasi Unmul</p>
+            <p>Sistem Penjadwalan Sidang Skripsi Farmasi Unmul</p>
           </div>
 
           <div class="col-lg-2 col-6 footer-links">

@@ -1,10 +1,10 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="/home">SIPEDAS</a>
+            <a href="/">SIPEDAS</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="/home">SP</a>
+            <a href="/">SP</a>
         </div>
         <ul class="sidebar-menu">
             <li class="{{ request()->segment(1) == 'dashboard' ? 'active' : '' }}">
@@ -15,7 +15,7 @@
                 <ul class="dropdown-menu">
                     <li class="{{ request()->segment(1) == 'internal-judul' ? 'active' : '' }}"><a class="nav-link" href="/internal-judul">Sidang Internal Judul</a></li>
                     <li class="{{ request()->segment(1) == 'metode-penelitian' ? 'active' : '' }}"><a class="nav-link" href="/metode-penelitian">Ujian Metode Peneltian</a></li>
-                    <li class="{{ request()->segment(1) == 'tinjauan-pustaka' ? 'active' : '' }}"><a class="nav-link" href="/tinjauan-pustaka">Ujian Tinjauan Pustakan</a></li>
+                    <li class="{{ request()->segment(1) == 'tinjauan-pustaka' ? 'active' : '' }}"><a class="nav-link" href="/tinjauan-pustaka">Ujian Tinjauan Pustaka</a></li>
                     <li class="{{ request()->segment(1) == 'pembimbingan-naskah' ? 'active' : '' }}"><a class="nav-link" href="/pembimbingan-naskah">Sidang Pembimbingan Naskah</a></li>
                 </ul>
             </li>
@@ -28,7 +28,7 @@
                     <li class="{{ request()->segment(1) == 'sidangnaskah-skripsi' ? 'active' : '' }}"><a class="nav-link" href="/sidangnaskah-skripsi">Sidang Naskah Skripsi</a></li>
                 </ul>
             </li>
-            <li class="dropdown {{ request()->segment(1) == 'ujiannaskah-skripsi' }}">
+            <li class="dropdown {{ request()->segment(1) == 'ujiannaskah-skripsi' ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-book"></i><span>Skripsi 3</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ request()->segment(1) == 'ujiannaskah-skripsi' ? 'active' : '' }}"><a class="nav-link" href="/ujiannaskah-skripsi">Ujian Naskah Skripsi</a></li>

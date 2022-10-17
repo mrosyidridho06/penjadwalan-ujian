@@ -55,7 +55,7 @@
     </x-auth-card>
 </x-guest-layout> --}}
 @include('layouts.partials.head')
-@section('title', 'Register')
+@section('title', 'Login')
 <div id="app">
     <section class="section">
         <div class="container mt-5">

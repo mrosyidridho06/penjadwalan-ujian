@@ -10,7 +10,7 @@ class InternalJudul extends Model
     use HasFactory;
 
     protected $table = 'internal_juduls';
-    protected $fillable = ['judul', 'draft', 'status_internal_id', 'tanggal', 'mahasiswa_id', 'ruangan_id', 'sesi_id'];
+    protected $fillable = ['judul', 'draft', 'tanggal', 'mahasiswa_id', 'ruangan_id', 'sesi_id'];
 
     public function ruangan()
     {
@@ -25,10 +25,5 @@ class InternalJudul extends Model
     public function sesi()
     {
         return $this->belongsTo(Sesi::class);
-    }
-
-    public function statusInternalJudul()
-    {
-        return $this->hasOne(StatusInternalJudul::class);
     }
 }

@@ -17,25 +17,19 @@ class RuangansTableSeeder extends Seeder
     {
         $ruangan = [
             [
-                'name' => 'KF1',
+                'name' => 'Sidang 1 Dekanat',
                 'status' => 'aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => null,
             ],
             [
-                'name' => 'KF2',
+                'name' => 'Sidang 2 Dekanat',
                 'status' => 'aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => null,
             ],
             [
-                'name' => 'KF3',
-                'status' => 'aktif',
-                'created_at' => Carbon::now(),
-                'updated_at' => null,
-            ],
-            [
-                'name' => 'KF4',
+                'name' => 'Meeting Lt. 2 Lab Farmaka Tropis',
                 'status' => 'aktif',
                 'created_at' => Carbon::now(),
                 'updated_at' => null,

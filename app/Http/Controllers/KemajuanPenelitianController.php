@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KemajuanPenelitian;
+use App\Models\Sesi;
+use App\Models\Ruangan;
 use Illuminate\Http\Request;
+use App\Models\KemajuanPenelitian;
+use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class KemajuanPenelitianController extends Controller
 {
@@ -14,7 +18,23 @@ class KemajuanPenelitianController extends Controller
      */
     public function index()
     {
-        //
+        if(auth()->user()->role == 'dosen'){
+            $kemajuan = KemajuanPenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->whereHas('mahasiswa', function ($query){
+                                            $query->where('dospem_satu', Auth::user()->dosen->id);
+                                        })
+                                        ->orWhereHas('mahasiswa', function ($query){
+                                            $query->where('dospem_dua', Auth::user()->dosen->id);
+                                        })
+                                        ->orderBy('id', 'asc')
+                                        ->get();
+        }elseif(auth()->user()->role == 'mahasiswa'){
+            $kemajuan = KemajuanPenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+        }else{
+            $kemajuan = KemajuanPenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+        }
+
+        return view('mahasiswa.kemajuan_penelitian.index', compact('kemajuan'));
     }
 
     /**
@@ -24,7 +44,10 @@ class KemajuanPenelitianController extends Controller
      */
     public function create()
     {
-        //
+        $sesi = Sesi::get();
+        $ruang = Ruangan::get();
+
+        return view('mahasiswa.kemajuan_penelitian.create', compact('sesi', 'ruang'));
     }
 
     /**
@@ -35,7 +58,29 @@ class KemajuanPenelitianController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'iduser' => 'required',
+            'judul' => 'required',
+            'draft' => 'required|file|mimes:pdf,doc,docx|max:10024',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+            'ruangan_id' => 'required',
+        ]);
+
+        $draft = Auth::user()->name. '_' .'Sidang Kemajuan Penelitian'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+        $request->file('draft')->move('skripsi2/kemajuan_penelitian', $draft);
+
+        KemajuanPenelitian::create([
+            'mahasiswa_id' => $request->iduser,
+            'judul' => $request->judul,
+            'tanggal' => $request->tanggal,
+            'sesi_id' => $request->sesi_id,
+            'ruangan_id' => $request->ruangan_id,
+            'draft' => $draft,
+        ]);
+
+        Alert::toast('Data Berhasil Dikirim', 'success');
+        return redirect()->route('kemajuan-penelitian.index');
     }
 
     /**

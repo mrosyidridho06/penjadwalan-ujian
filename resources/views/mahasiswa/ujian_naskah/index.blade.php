@@ -1,49 +1,91 @@
-
 @extends('layouts.app')
 @section('title', 'Ujian Naskah')
 @section('content')
 <div class="section">
     <div class="section-header">
-        <h1>Seminar Proposal</h1>
+        <h1>Ujian Naskah Skripsi</h1>
     </div>
-    <div class="container">
         <div class="card">
-            <div class="card-header d-flex justify-content-end">
-                <button type="button" class="btn btn-light" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fas fa-plus"></i> Ajukan Proposal
-                </button>
-            </div>
+            @if(auth()->check())
+                @if (auth()->user()->role == 'mahasiswa')
+                    @if ($naskah->where('mahasiswa_id','=', auth()->user()->mahasiswa->id)->count() == 0)
+                    <div class="card-header d-flex justify-content-end">
+                        <a href="{{ route('ujiannaskah-skripsi.create') }}" type="button" class="btn btn-light">
+                            <i class="fas fa-plus"></i> Ajukan Jadwal
+                        </a>
+                    </div>
+                    @endif
+                @endif
+            @endif
             <div class="card-body table-responsive">
                 <table class="table table-hover " id="myTable">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>Judul</th>
-                            <th>Dosen Pembimbing</th>
+                            <th>Dosen Pembimbing Utama</th>
+                            <th>Dosen Pembimbing Pendamping</th>
+                            <th>Penguji</th>
+                            <th>Tanggal</th>
+                            <th>Sesi</th>
                             <th>Draft</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($sempro as $item)
+                        @foreach ($naskah as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{!! $item->judul !!}</td>
-                            <td>{{ $item->dosen->nama }}</td>
-                            <td>{{ $item->draft }}</td>
+                            <td>{{ $item->judul }}</td>
+                            <td>{{ $item->mahasiswa->dospemSatu->user->name }}</td>
+                            <td>{{ $item->mahasiswa->dospemDua->user->name }}</td>
                             <td>
-                                @if ($item->status == 'menunggu')
-                                    <span class="badge badge-info">{{ strtoupper($item->status) }}</span>
-                                @elseif ($item->status == 'disetuji')
-                                    <span class="badge badge-success">{{ strtoupper($item->status) }}</span>
-                                @endif
+                                <p>Penguji 1</p>
+                                <li>{{ $item->penguji1 }}</li>
+                                <p>Penguji 2</p>
+                                <li>{{ $item->penguji2 }}</li>
+                                <p>Penguji 3</p>
+                                <li>{{ $item->penguji3 }}</li>
                             </td>
+                            <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
+                            <td>{{ $item->sesi->sesi }} {{ $item->sesi->jam_awal }}-{{ $item->sesi->jam_akhir }}</td>
+                            <td><a href="{{ asset("/skripsi3/ujiannaskah_skripsi/" . $item->draft) }}" target="_blank"> {{ $item->draft }}</a></td>
+                            {{-- <td>
+                                <form action="{{ route('sertifikat.interjudul') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
+                                    <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                    <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
+                                    <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
+                                    <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
+                                    <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                    <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                    <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
+                                    <button class="btn btn-primary btn-icon icon-left" type="submit"><i class="fas fa-download"></i> Download</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{ route('undangan.uns') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="nim" value="{{ $item->mahasiswa->nim }}">
+                                    <input type="hidden" name="tanggal" value="{{ $item->tanggal }}">
+                                    <input type="hidden" name="judul" value="{{ $item->judul }}">
+                                    <input type="hidden" name="nama" value="{{ $item->mahasiswa->user->name }}">
+                                    <input type="hidden" name="prodi" value="{{ $item->mahasiswa->prodi->jurusan }}">
+                                    <input type="hidden" name="ruangan" value="{{ $item->ruangan->name }}">
+                                    <input type="hidden" name="penguji1" value="{{ $item->penguji1 }}">
+                                    <input type="hidden" name="penguji2" value="{{ $item->penguji2 }}">
+                                    <input type="hidden" name="penguji3" value="{{ $item->penguji3 }}">
+                                    <input type="hidden" name="sesi" value="{{ $item->sesi->jam_awal }}">
+                                    <input type="hidden" name="dospem_satu" value="{{ $item->mahasiswa->dospemSatu->user->name }}">
+                                    <input type="hidden" name="dospem_dua" value="{{ $item->mahasiswa->dospemDua->user->name }}">
+                                    <button class="btn btn-primary btn-icon icon-left" type="submit"><i class="fas fa-download"></i> Download</button>
+                                </form>
+                            </td> --}}
                         </tr>
-                        @endforeach --}}
+                        @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 </div>
 @endsection
