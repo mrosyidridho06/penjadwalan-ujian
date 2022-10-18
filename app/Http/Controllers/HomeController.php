@@ -25,7 +25,7 @@ class HomeController extends Controller
         $kemajuan = KemajuanPenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
         $kelayakan = KelayakanData::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
         $sidangnaskah = SidangNaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
-        $ujiannaskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
+        $ujiannaskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->get();
 
         return view('home', compact('InternalJudul', 'metpen', 'tipus', 'pn', 'prosedural', 'kemajuan', 'kelayakan', 'sidangnaskah', 'ujiannaskah'));
     }

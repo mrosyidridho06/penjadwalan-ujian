@@ -1,22 +1,23 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DosenController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\InternalJudulController;
-use App\Http\Controllers\InternalProseduralController;
-use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\KelayakanDataController;
-use App\Http\Controllers\KemajuanPenelitianController;
-use App\Http\Controllers\MetodePenelitianController;
-use App\Http\Controllers\ProdiController;
-use App\Http\Controllers\RuanganController;
-use App\Http\Controllers\NaskahSkripsiController;
-use App\Http\Controllers\PembimbinganNaskahController;
 use App\Http\Controllers\SesiController;
-use App\Http\Controllers\SidangNaskahSkripsiController;
+use App\Http\Controllers\DosenController;
+use App\Http\Controllers\ProdiController;
+use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RuanganController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InternalJudulController;
+use App\Http\Controllers\KelayakanDataController;
+use App\Http\Controllers\NaskahSkripsiController;
 use App\Http\Controllers\TinjauanPustakaController;
+use App\Http\Controllers\MetodePenelitianController;
+use App\Http\Controllers\InternalProseduralController;
+use App\Http\Controllers\KemajuanPenelitianController;
+use App\Http\Controllers\PembimbinganNaskahController;
+use App\Http\Controllers\SidangNaskahSkripsiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('profile', ProfileController::class);
 
 });
 

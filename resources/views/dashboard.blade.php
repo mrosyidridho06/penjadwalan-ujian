@@ -7,7 +7,6 @@
         </div>
         @if (auth()->check())
             @if (auth()->user()->role == 'dosen')
-
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
@@ -72,6 +71,7 @@
             </div>
             @endif
         @endif
+        
     </div>
 @endsection
 @push('scripts')

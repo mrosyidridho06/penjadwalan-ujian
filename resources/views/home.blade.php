@@ -323,6 +323,9 @@
                         <th>Judul</th>
                         <th>Dosen Pembimbing Utama</th>
                         <th>Dosen Pembimbing Pendamping</th>
+                        <th>Dosen Penguji 1</th>
+                        <th>Dosen Penguji 2</th>
+                        <th>Dosen Penguji 3</th>
                         <th>Tanggal</th>
                         <th>Ruangan</th>
                         <th>Jam</th>
@@ -335,6 +338,9 @@
                                 <td>{!! $itemij->judul !!}</td>
                                 <td>{{ $itemij->mahasiswa->dospemSatu->user->name }}</td>
                                 <td>{{ $itemij->mahasiswa->dospemDua->user->name }}</td>
+                                <td>{{ $itemij->pengujiSatu->user->name }}</td>
+                                <td>{{ $itemij->pengujiDua->user->name }}</td>
+                                <td>{{ $itemij->pengujiTiga->user->name }}</td>
                                 <td>{{ Carbon\Carbon::parse($itemij->tanggal)->translatedFormat('l, d F Y') }}</td>
                                 <td>{{ $itemij->ruangan->name }}</td>
                                 <td>{{ $itemij->sesi->sesi }} {{ $itemij->sesi->jam_awal }}-{{ $itemij->sesi->jam_akhir }}</td>
