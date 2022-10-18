@@ -39,12 +39,20 @@
                             <td>{{ $item->mahasiswa->dospemSatu->user->name }}</td>
                             <td>{{ $item->mahasiswa->dospemDua->user->name }}</td>
                             <td>
-                                <p>Penguji 1</p>
-                                <li>{{ $item->penguji1 }}</li>
-                                <p>Penguji 2</p>
-                                <li>{{ $item->penguji2 }}</li>
-                                <p>Penguji 3</p>
-                                <li>{{ $item->penguji3 }}</li>
+                                <ul>
+                                    <li>
+                                        <p>Penguji 1</p>
+                                        {{ $item->pengujiSatu->user->name }}
+                                    </li>
+                                    <li>
+                                        <p>Penguji 2</p>
+                                        {{ $item->pengujiDua->user->name }}
+                                    </li>
+                                    <li>
+                                        <p>Penguji 3</p>
+                                        {{ $item->pengujiTiga->user->name }}
+                                    </li>
+                                </ul>
                             </td>
                             <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                             <td>{{ $item->sesi->sesi }} {{ $item->sesi->jam_awal }}-{{ $item->sesi->jam_akhir }}</td>

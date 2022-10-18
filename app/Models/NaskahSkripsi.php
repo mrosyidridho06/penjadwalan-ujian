@@ -27,17 +27,17 @@ class NaskahSkripsi extends Model
         return $this->belongsTo(Sesi::class);
     }
 
-    public function penguji1()
+    public function pengujiSatu()
     {
         return $this->belongsTo(Dosen::class, 'penguji1');
     }
 
-    public function penguji2()
+    public function pengujiDua()
     {
         return $this->belongsTo(Dosen::class, 'penguji2');
     }
 
-    public function penguji3()
+    public function pengujiTiga()
     {
         return $this->belongsTo(Dosen::class, 'penguji3');
     }

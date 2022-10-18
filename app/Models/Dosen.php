@@ -29,7 +29,8 @@ class Dosen extends Model
 
     public function naskahSkripsi()
     {
-        return $this->hasManyThrough(NaskahSkripsi::class, 'penguji1', 'penguji2', 'penguji3');
+        return $this->hasMany(NaskahSkripsi::class);
     }
+
 
 }

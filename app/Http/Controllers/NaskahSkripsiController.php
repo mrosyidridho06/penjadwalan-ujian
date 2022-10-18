@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Sesi;
+use App\Models\User;
 use App\Models\Dosen;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
@@ -22,7 +23,7 @@ class NaskahSkripsiController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -32,10 +33,10 @@ class NaskahSkripsiController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'penguji1.user', 'penguji2.user', 'penguji3.user')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
             // dd($naskah);
         }else{
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->orderBy('id', 'asc')->get();
         }
 
         return view('mahasiswa.ujian_naskah.index', compact('naskah'));
@@ -50,7 +51,7 @@ class NaskahSkripsiController extends Controller
     {
         $sesi = Sesi::get();
         $ruang = Ruangan::get();
-        $dosen = Dosen::get();
+        $dosen = Dosen::with('user')->get();
 
         return view('mahasiswa.ujian_naskah.create', compact('sesi', 'ruang', 'dosen'));
     }
