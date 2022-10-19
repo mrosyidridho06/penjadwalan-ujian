@@ -32,6 +32,10 @@ use App\Http\Controllers\SidangNaskahSkripsiController;
 
 Route::get('/', [HomeController::class, 'index']);
 
+// Route::get('/tes', function(){
+//     return view('home1');
+// });
+
 Route::group(['middleware' => ['auth','cekRole:mahasiswa,dosen,admin']], function () {
     Route::resource('/internal-judul', InternalJudulController::class);
     Route::resource('/metode-penelitian', MetodePenelitianController::class);
