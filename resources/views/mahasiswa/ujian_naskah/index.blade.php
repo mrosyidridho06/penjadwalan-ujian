@@ -18,7 +18,7 @@
                 @endif
             @endif
             <div class="card-body table-responsive">
-                <table class="table table-hover " id="myTable">
+                <table class="table table-hover" id="myTable">
                     <thead>
                         <tr>
                             <th>No</th>

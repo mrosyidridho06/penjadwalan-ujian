@@ -493,7 +493,7 @@
                     <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
                         <h4>Contact Us</h4>
                         <p>
-                            Jalan Penajam, Kampus Unmul Gn Kelua<br>
+                            Jalan Penajam, Kampus Unmul Gn Kelua
                             Kota Samarinda<br><br>
                             <strong>Phone:</strong> +62541739491<br>
                             <strong>Email:</strong> fa_mul@farmasi.unmul.ac.id<br>

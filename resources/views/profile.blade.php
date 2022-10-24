@@ -32,11 +32,6 @@
                                         <label>NIM</label>
                                         <input type="text" class="form-control" name="nip" value="{{ old('nip', Auth::user()->mahasiswa->nim) }}">
                                     </div>
-                                @else
-                                    <div class="form-group col-md-6 col-12">
-                                        <label>NIM</label>
-                                        <input type="text" class="form-control" name="nip" value="{{ old('nip', Auth::user()->token) }}">
-                                    </div>
                                 @endif
                             </div>
                             <div class="row">
