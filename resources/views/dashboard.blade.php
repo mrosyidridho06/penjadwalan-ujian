@@ -180,7 +180,7 @@
                         <h4>Sarjana Farmasi (S1)</h4>
                     </div>
                     <div class="card-body">
-                        <a href="http://bitly.ws/vBYh" class="btn btn-primary btn-icon btn-sm icon-left"><i class="fas fa-download"></i> Download</a>
+                        <a href="http://bitly.ws/vBYh"  target="_blank" class="btn btn-primary btn-icon btn-sm icon-left"><i class="fas fa-download"></i> Download</a>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@
                         <h4>Sarjana Farmasi Klinis (S1 Farmasi Klinis)</h4>
                     </div>
                     <div class="card-body">
-                        <a href="http://shorturl.at/CFU18" class="btn btn-primary btn-icon btn-sm icon-left"><i class="fas fa-download"></i> Download</a>
+                        <a href="http://shorturl.at/CFU18" target="_blank" class="btn btn-primary btn-icon btn-sm icon-left"><i class="fas fa-download"></i> Download</a>
                     </div>
                 </div>
             </div>
