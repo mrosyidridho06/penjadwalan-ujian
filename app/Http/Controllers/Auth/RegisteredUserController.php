@@ -44,7 +44,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'nim' => ['required', 'digits:10', 'numeric'],
+            'nim' => ['required', 'digits:10', 'numeric', 'unique:mahasiswas'],
             'angkatan' => ['required'],
             'alamat' => ['required', 'string'],
             'prodi' => ['required'],
