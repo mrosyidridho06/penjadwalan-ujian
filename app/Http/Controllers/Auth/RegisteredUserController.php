@@ -43,7 +43,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()->min(8)->numbers()->mixedCase()],
             'nim' => ['required', 'digits:10', 'numeric', 'unique:mahasiswas'],
             'angkatan' => ['required'],
             'alamat' => ['required', 'string'],
