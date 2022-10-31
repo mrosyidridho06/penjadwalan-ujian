@@ -80,6 +80,7 @@
                 <br>
                 <label for="draft">Draft</label>
                 <input type="file" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" name="draft">
+                <div class="form-text text-muted">The image must have a maximum size of 10MB</div>
                 @error('draft')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}

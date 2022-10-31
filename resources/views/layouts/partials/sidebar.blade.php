@@ -13,19 +13,19 @@
             <li class="dropdown {{ request()->segment(1) == 'internal-judul' || request()->segment(1) == 'metode-penelitian' || request()->segment(1) == 'tinjauan-pustaka' || request()->segment(1) == 'pembimbingan-naskah' ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-book"></i><span>Skripsi 1</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{ request()->segment(1) == 'internal-judul' ? 'active' : '' }}"><a class="nav-link" href="/internal-judul">Sidang Internal Judul</a></li>
-                    <li class="{{ request()->segment(1) == 'metode-penelitian' ? 'active' : '' }}"><a class="nav-link" href="/metode-penelitian">Ujian Metode Peneltian</a></li>
-                    <li class="{{ request()->segment(1) == 'tinjauan-pustaka' ? 'active' : '' }}"><a class="nav-link" href="/tinjauan-pustaka">Ujian Tinjauan Pustaka</a></li>
-                    <li class="{{ request()->segment(1) == 'pembimbingan-naskah' ? 'active' : '' }}"><a class="nav-link" href="/pembimbingan-naskah">Sidang Pembimbingan Naskah</a></li>
+                    <li class="{{ request()->segment(1) == 'internal-judul' ? 'active' : '' }}"><a class="nav-link" href="/internal-judul">Internal Judul Skripsi</a></li>
+                    <li class="{{ request()->segment(1) == 'metode-penelitian' ? 'active' : '' }}"><a class="nav-link" href="/metode-penelitian">Internal Metode Peneltian</a></li>
+                    <li class="{{ request()->segment(1) == 'tinjauan-pustaka' ? 'active' : '' }}"><a class="nav-link" href="/tinjauan-pustaka">Internal Tinjauan Pustaka</a></li>
+                    <li class="{{ request()->segment(1) == 'pembimbingan-naskah' ? 'active' : '' }}"><a class="nav-link" href="/pembimbingan-naskah">Internal Naskah Proposal</a></li>
                 </ul>
             </li>
             <li class="dropdown {{ request()->segment(1) == 'internal-prosedural' || request()->segment(1) == 'kemajuan-penelitian' || request()->segment(1) == 'kelayakan-data' || request()->segment(1) == 'sidangnaskah-skripsi' ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-book"></i><span>Skripsi 2</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{ request()->segment(1) == 'internal-prosedural' ? 'active' : '' }}"><a class="nav-link" href="/internal-prosedural">Sidang Internal Prosedural</a></li>
-                    <li class="{{ request()->segment(1) == 'kemajuan-penelitian' ? 'active' : '' }}"><a class="nav-link" href="/kemajuan-penelitian">Sidang Kemajuan Penelitian</a></li>
-                    <li class="{{ request()->segment(1) == 'kelayakan-data' ? 'active' : '' }}"><a class="nav-link" href="/kelayakan-data">Sidang Kelayakan Data</a></li>
-                    <li class="{{ request()->segment(1) == 'sidangnaskah-skripsi' ? 'active' : '' }}"><a class="nav-link" href="/sidangnaskah-skripsi">Sidang Naskah Skripsi</a></li>
+                    <li class="{{ request()->segment(1) == 'internal-prosedural' ? 'active' : '' }}"><a class="nav-link" href="/internal-prosedural">Internal Prosedural</a></li>
+                    <li class="{{ request()->segment(1) == 'kemajuan-penelitian' ? 'active' : '' }}"><a class="nav-link" href="/kemajuan-penelitian">Internal Kemajuan Penelitian</a></li>
+                    <li class="{{ request()->segment(1) == 'kelayakan-data' ? 'active' : '' }}"><a class="nav-link" href="/kelayakan-data">Internal Kelayakan Data</a></li>
+                    <li class="{{ request()->segment(1) == 'sidangnaskah-skripsi' ? 'active' : '' }}"><a class="nav-link" href="/sidangnaskah-skripsi">Internal Naskah Skripsi</a></li>
                 </ul>
             </li>
             <li class="dropdown {{ request()->segment(1) == 'ujiannaskah-skripsi' ? 'active' : '' }}">

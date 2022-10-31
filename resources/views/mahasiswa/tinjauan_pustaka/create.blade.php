@@ -3,7 +3,7 @@
 @section('content')
 <div class="section">
     <div class="section-header">
-        <h1>Ajukan Jadwal Ujian Tinjauan Pustaka</h1>
+        <h1>Ajukan Jadwal Sidang Tinjauan Pustaka</h1>
     </div>
     <div class="card">
         <div class="card-body table-responsive">
@@ -80,6 +80,7 @@
                 <br>
                 <label for="draft">Draft</label>
                 <input type="file" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" name="draft">
+                <div class="form-text text-danger">*The draft must have a maximum size of 10MB</div>
                 @error('draft')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}

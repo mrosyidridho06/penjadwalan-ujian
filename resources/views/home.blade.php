@@ -70,7 +70,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 d-flex flex-column justify-content-center">
-                    <h1 data-aos="fade-up">Sistem Penjadwalan Sidang Skripsi Farmasi Unmul</h1>
+                    <h1 data-aos="fade-up">Sistem Informasi Penjadwalan Sidang Skripsi Farmasi Unmul</h1>
                     <div data-aos="fade-up" data-aos-delay="600">
                         <div class="text-center text-lg-start">
                             <a href="#features" class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
@@ -99,16 +99,16 @@
                         <!-- Tabs -->
                         <ul class="nav nav-pills mb-3">
                             <li>
-                                <a class="nav-link active" data-bs-toggle="pill" href="#tab1">Sidang Internal Judul</a>
+                                <a class="nav-link active" data-bs-toggle="pill" href="#tab1">Internal Judul Skripsi</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab2">Ujian Metode Peneltian</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab2">Internal Metode Peneltian</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab3">Ujian Tinjauan Pustaka</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab3">Internal Tinjauan Pustaka</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab4">Sidang Pembimbingan Naskah</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab4">Internal Naskah Proposal</a>
                             </li>
                         </ul><!-- End Tabs -->
 
@@ -253,16 +253,16 @@
                         <!-- Tabs -->
                         <ul class="nav nav-pills mb-3">
                             <li>
-                                <a class="nav-link active" data-bs-toggle="pill" href="#tab2-1">Sidang Internal Prosedural</a>
+                                <a class="nav-link active" data-bs-toggle="pill" href="#tab2-1">Internal Prosedural</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-2">Sidang Kemajuan Penelitian</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-2">Internal Kemajuan Penelitian</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-3">Sidang Kelayakan Data</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-3">Internal Kelayakan Data</a>
                             </li>
                             <li>
-                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-4">Sidang Naskah Skripsi</a>
+                                <a class="nav-link" data-bs-toggle="pill" href="#tab2-4">Internal Naskah Skripsi</a>
                             </li>
                         </ul><!-- End Tabs -->
 
@@ -614,8 +614,8 @@
                     {
                         extend: 'csv',
                         text: 'Export',
-                        title: 'Jadwal Ujian Metode Penelitian',
-                        filename: 'Jadwal Ujian Metode Penelitian',
+                        title: 'Jadwal Sidang Metode Penelitian',
+                        filename: 'Jadwal Sidang Metode Penelitian',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
@@ -626,8 +626,8 @@
                     {
                         extend: 'pdf',
                         text: 'Pdf',
-                        title: 'Jadwal Ujian Metode Penelitian',
-                        filename: 'Jadwal Ujian Metode Penelitian',
+                        title: 'Jadwal Sidang Metode Penelitian',
+                        filename: 'Jadwal Sidang Metode Penelitian',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {
@@ -640,8 +640,8 @@
                     {
                         extend: 'print',
                         text: 'Print',
-                        title: 'Jadwal Ujian Metode Penelitian',
-                        filename: 'Jadwal Ujian Metode Penelitian',
+                        title: 'Jadwal Sidang Metode Penelitian',
+                        filename: 'Jadwal Sidang Metode Penelitian',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {
@@ -674,8 +674,8 @@
                     {
                         extend: 'csv',
                         text: 'Export',
-                        title: 'Jadwal Ujian Tinjauan Pustaka',
-                        filename: 'Jadwal Ujian Tinjauan Pustaka',
+                        title: 'Jadwal Sidang Tinjauan Pustaka',
+                        filename: 'Jadwal Sidang Tinjauan Pustaka',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
@@ -686,8 +686,8 @@
                     {
                         extend: 'pdf',
                         text: 'Pdf',
-                        title: 'Jadwal Ujian Tinjauan Pustaka',
-                        filename: 'Jadwal Ujian Tinjauan Pustaka',
+                        title: 'Jadwal Sidang Tinjauan Pustaka',
+                        filename: 'Jadwal Sidang Tinjauan Pustaka',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {
@@ -700,8 +700,8 @@
                     {
                         extend: 'print',
                         text: 'Print',
-                        title: 'Jadwal Ujian Tinjauan Pustaka',
-                        filename: 'Jadwal Ujian Tinjauan Pustaka',
+                        title: 'Jadwal Sidang Tinjauan Pustaka',
+                        filename: 'Jadwal Sidang Tinjauan Pustaka',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {

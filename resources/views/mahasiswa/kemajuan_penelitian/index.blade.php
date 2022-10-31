@@ -3,7 +3,7 @@
 @section('content')
 <div class="section">
     <div class="section-header">
-        <h1>Sidang Kemajuan Penelitian</h1>
+        <h1>Internal Kemajuan Penelitian</h1>
     </div>
     <div class="card">
         @if(auth()->check())
