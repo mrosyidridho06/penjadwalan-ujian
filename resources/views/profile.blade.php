@@ -12,67 +12,72 @@
         <div class="row mt-sm-4">
             <div class="col-12 col-md-12 col-lg-12">
                 <div class="card">
-                    <form>
-                        <div class="card-header">
-                            <h4>Edit Profile</h4>
+                    <div class="card-header">
+                        <h4>Edit Profile</h4>
+                    </div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger border-left-danger" role="alert">
+                            <ul class="pl-4 my-2">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="form-group col-md-6 col-12">
-                                    <label>Name</label>
-                                    <input type="text" class="form-control" name="name" value="{{ old('name', Auth::user()->name) }}">
-                                </div>
-                                @if (Auth::user()->role == 'dosen')
+                    @endif
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-md-6 col-12">
+                                <label>Name</label>
+                                <input type="text" class="form-control" name="name" value="{{ old('name', Auth::user()->name) }}" readonly>
+                            </div>
+                            @if (Auth::user()->role == 'dosen')
                                 <div class="form-group col-md-6 col-12">
                                     <label>NIP</label>
-                                    <input type="text" class="form-control" name="nip" value="{{ old('nip', Auth::user()->dosen->nip) }}">
+                                    <input type="text" class="form-control" name="nip" value="{{ old('nip', Auth::user()->dosen->nip) }}" readonly>
                                 </div>
-                                @elseif (Auth::user()->role == 'mahasiswa')
-                                    <div class="form-group col-md-6 col-12">
-                                        <label>NIM</label>
-                                        <input type="text" class="form-control" name="nip" value="{{ old('nip', Auth::user()->mahasiswa->nim) }}">
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="row">
+                            @elseif (Auth::user()->role == 'mahasiswa')
                                 <div class="form-group col-md-6 col-12">
-                                    <label>Email</label>
-                                    <input type="email" class="form-control" value="{{ old('email', Auth::user()->email) }}">
+                                    <label>NIM</label>
+                                    <input type="text" class="form-control" name="nim" value="{{ Auth::user()->mahasiswa->nim }}" readonly>
                                 </div>
                                 <div class="form-group col-md-6 col-12">
-                                    <label>Phone</label>
-                                    <input type="tel" class="form-control" value="">
+                                    <label>Dosen Pembimbing Utama</label>
+                                    <input type="text" class="form-control" name="dosbing1" value="{{ Auth::user()->mahasiswa->dospemSatu->user->name }}" readonly>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group mb-0 col-12">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" name="remember" class="custom-control-input" id="newsletter">
-                                        <label class="custom-control-label" for="newsletter">Subscribe to newsletter</label>
-                                        <div class="text-muted form-text">
-                                            You will get new information about products, offers and promotions
-                                        </div>
-                                    </div>
+                                <div class="form-group col-md-6 col-12">
+                                    <label>Dosen Pembimbing Pendamping</label>
+                                    <input type="text" class="form-control" name="dosbing2" value="{{ Auth::user()->mahasiswa->dospemDua->user->name }}" readonly>
                                 </div>
+                            @endif
+                            <div class="form-group col-md-6 col-12">
+                                <label>Email</label>
+                                <input type="text" class="form-control" name="email" value="{{ old('email', Auth::user()->email) }}" readonly>
                             </div>
                         </div>
-                        <div class="card-footer text-right">
-                            <button class="btn btn-primary">Save Changes</button>
+                    <form action="{{ route('profile.update', $user->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="row">
+                            <div class="form-group col-md-4 col-12">
+                                <label>Old Password</label>
+                                <input type="password" class="form-control" name="current_password">
+                            </div>
+                            <div class="form-group col-md-4 col-12">
+                                <label>New Password</label>
+                                <input type="password" class="form-control" name="new_password">
+                            </div>
+                            <div class="form-group col-md-4 col-12">
+                                <label>Confirmation Password</label>
+                                <input type="password" class="form-control" name="password_confirmation">
+                            </div>
                         </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button class="btn btn-primary">Save Changes</button>
+                    </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    </div>
 @endsection
-@push('scripts')
-    <script>
-        $('.myTable').DataTable({
-            rowReorder: {
-                selector: 'td:nth-child(2)'
-            },
-            responsive: true
-        });
-    </script>
-@endpush

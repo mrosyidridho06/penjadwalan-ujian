@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ asset('assets/modules/bootstrap/css/bootstrap.min.css') }} ">
     {{-- <link rel="stylesheet" href="{{ asset('assets/modules/fontawesomepro/css/all.min.css') }} "> --}}
     <link rel="stylesheet" href="{{ asset('assets/modules/fontawesome/css/all.min.css') }} ">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="{{ asset('assets/modules/jqvmap/dist/jqvmap.min.css') }}">

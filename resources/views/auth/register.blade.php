@@ -142,16 +142,21 @@
                                 <form method="POST" action="{{ route('register') }}">
                                     @csrf
                                     <div class="row">
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <div class="form-group">
                                                 <label for="name">Nama</label>
                                                 <input id="name" type="name" class="form-control" value="{{ old('name') }}" name="name" required>
                                             </div>
                                         </div>
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <div class="form-group">
                                                 <label for="nim">NIM</label>
-                                                <input id="nim" type="text" class="form-control" value="{{ old('nim') }}" name="nim" required maxlength="10">
+                                                <input id="nim" type="text" class="form-control @error('nim') is-invalid @enderror" value="{{ old('nim') }}" name="nim" required maxlength="10">
+                                                @error('nim')
+                                                    <div class="invalid-feedback">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +169,7 @@
                                         <textarea name="alamat" class="form-control">{{ old('alamat') }}</textarea>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label>Prodi</label>
                                             <select class="form-control selectric" name="prodi" required>
                                                 <option value="" selected>Pilih Prodi</option>
@@ -177,7 +182,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label>Angkatan</label>
                                             <select class="form-control selectric" name="angkatan" required>
                                                 <?php
@@ -191,7 +196,7 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label>Dosen Pembimbing Utama</label>
                                             <select class="form-control selectric" name="dospem_satu" required>
                                                 <option value="" selected>Pilih Dosen</option>
@@ -204,7 +209,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label>Dosen Pembimbing Pendamping</label>
                                             <select class="form-control selectric" name="dospem_dua" required>
                                                 <option value="" selected>Pilih Dosen</option>
@@ -219,15 +224,20 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label for="password" class="d-block">Password</label>
-                                            <input id="password" type="password" class="form-control pwstrength" data-indicator="pwindicator" name="password" required autocomplete="new-password">
+                                            <input id="password" type="password" class="form-control pwstrength @error('password') is-invalid @enderror" data-indicator="pwindicator" name="password" required autocomplete="new-password">
+                                            @error('password')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                             <div id="pwindicator" class="pwindicator">
                                                 <div class="bar"></div>
                                                 <div class="label"></div>
                                             </div>
                                         </div>
-                                        <div class="form-group col-6">
+                                        <div class="form-group col-md-6 col-sm-12">
                                             <label for="password2" class="d-block">Password Confirmation</label>
                                             <input id="password2" type="password" class="form-control" name="password_confirmation" required>
                                         </div>

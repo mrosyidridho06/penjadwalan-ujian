@@ -55,6 +55,7 @@
                 <br>
                 <label for="tanggal">Tanggal</label>
                 <input type="date" class="form-control" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}">
+                {{-- <input id="date1"  placeholder="DD/MM/YYYY" data-input class="form-control" name="tanggal"/> --}}
                 @error('tanggal')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}
@@ -96,4 +97,20 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+    <script>
+        $("#date1").flatpickr({
+            enableTime: false,
+            dateFormat: "Y-m-d",
+            "disable": [
+                function(date) {
+                return (date.getDay() === 0 || date.getDay() === 6);  // disable weekends
+                }
+            ],
+            "locale": {
+                "firstDayOfWeek": 1 // set start day of week to Monday
+            }
+        });
+    </script>
+@endpush
 

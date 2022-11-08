@@ -30,6 +30,7 @@
 <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <!-- Page Specific JS File -->
 {{-- <script src="{{ asset('assets/js/page/index.js') }}"></script> --}}
