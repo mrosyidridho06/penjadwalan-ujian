@@ -70,6 +70,9 @@
                                 <label>Confirmation Password</label>
                                 <input type="password" class="form-control" name="password_confirmation">
                             </div>
+                            <div class="form-group col-12">
+                                <div class="form-text text-muted">Password harus lebih dari 8 karakter yang terdiri dari huruf besar, huruf kecil dan angka.</div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer text-right">

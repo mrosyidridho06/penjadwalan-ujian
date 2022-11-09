@@ -227,6 +227,7 @@
                                         <div class="form-group col-md-6 col-sm-12">
                                             <label for="password" class="d-block">Password</label>
                                             <input id="password" type="password" class="form-control pwstrength @error('password') is-invalid @enderror" data-indicator="pwindicator" name="password" required autocomplete="new-password">
+                                            <div class="form-text text-muted">Password harus lebih dari 8 karakter yang terdiri dari huruf besar, huruf kecil dan angka.</div>
                                             @error('password')
                                                 <div class="invalid-feedback">
                                                     {{ $message }}
