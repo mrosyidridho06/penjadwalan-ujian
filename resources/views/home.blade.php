@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    @if ($message = Session::has('success'))
+    @if ($message = Session::has('status'))
         <div class="alert alert-warning">
             {{ $message }}
         </div>
