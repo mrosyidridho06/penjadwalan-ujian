@@ -482,6 +482,7 @@
                         <ul>
                             <li><i class="bi bi-chevron-right"></i> <a href="/">Home</a></li>
                             <li><i class="bi bi-chevron-right"></i> <a href="/login">Login</a></li>
+                            <li><i class="bi bi-chevron-right"></i> <a href="{{ asset('dokumentasi/MANUAL BOOK SIPEDAS.pdf') }}" target="_blank">Manual Book SIPEDAS</a></li>
                         </ul>
                     </div>
 
