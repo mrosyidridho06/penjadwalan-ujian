@@ -4,8 +4,8 @@
     <section class="section">
         <div class="container md:mt-2 sm:mt-5">
             <div class="row">
-                <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
-                    <div class="login-brand mb-2">
+                <div class="mt-4 col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                    <div class="login-brand mb-4">
                         <a href="/">
                             <img src="{{ asset('images/unmul.png') }}" alt="logo" width="100" class="shadow-light rounded-circle">
                         </a>
@@ -66,7 +66,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="simple-footer">
+                    <div class="simple-footer mb-0">
                         Copyright &copy; Farmasi Unmul 2022
                     </div>
                 </div>

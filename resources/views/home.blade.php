@@ -483,7 +483,7 @@
                             <li><i class="bi bi-chevron-right"></i> <a href="/">Home</a></li>
                             <li><i class="bi bi-chevron-right"></i> <a href="/login">Login</a></li>
                             <li><i class="bi bi-chevron-right"></i> <a href="{{ asset('dokumentasi/MANUAL BOOK SIPEDAS.pdf') }}" target="_blank">Buku Petunjuk Penggunaan</a></li>
-                            <li><i class="bi bi-chevron-right"></i> <a href="#">Video Tutorial</a></li>
+                            <li><i class="bi bi-chevron-right"></i> <a href="{{ asset('dokumentasi/Video Tutorial sipedas.mp4') }}" target="_blank">Video Tutorial</a></li>
                         </ul>
                     </div>
 

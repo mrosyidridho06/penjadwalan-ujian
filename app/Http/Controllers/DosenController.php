@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Rules\Password;
 use App\Models\User;
 use App\Models\Dosen;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -89,9 +90,11 @@ class DosenController extends Controller
      * @param  \App\Models\Dosen  $dosen
      * @return \Illuminate\Http\Response
      */
-    public function edit(Dosen $dosen)
+    public function edit($id)
     {
-        //
+        $dosen = Dosen::with('user')->find($id);
+
+        return $dosen;
     }
 
     /**
@@ -114,6 +117,14 @@ class DosenController extends Controller
      */
     public function destroy(Dosen $dosen)
     {
-        //
+        try {
+            $dosen->delete();
+            Alert::toast('Data Berhasil Dihapus', 'success');
+            return redirect()->back();
+        } catch (Exception $e){
+            Alert::toast('Data tidak bisa dihapus karena ada mahasiswa yang berelasi dengan dosen ini', 'warning');
+            return redirect()->back();
+        }
+
     }
 }
