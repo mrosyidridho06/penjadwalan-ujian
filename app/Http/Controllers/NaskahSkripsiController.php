@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Sesi;
 use App\Models\User;
 use App\Models\Dosen;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Str;
+use App\Models\JadwalSidang;
 use Illuminate\Http\Request;
 use App\Models\NaskahSkripsi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class NaskahSkripsiController extends Controller
@@ -23,7 +27,8 @@ class NaskahSkripsiController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')
+            $naskah = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')
+                                        ->where('sidang_type', 'uns')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -33,10 +38,10 @@ class NaskahSkripsiController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $naskah = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->where('sidang_type', 'uns')->get();
             // dd($naskah);
         }else{
-            $naskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->orderBy('id', 'asc')->get();
+            $naskah = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->orderBy('id', 'asc')->where('sidang_type', 'uns')->get();
         }
 
         return view('mahasiswa.ujian_naskah.index', compact('naskah'));
@@ -76,23 +81,44 @@ class NaskahSkripsiController extends Controller
             'ruangan_id' => 'required',
         ]);
 
-        $draft = Auth::user()->name. '_' .'Ujian Naskah Skripsi'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
-        $request->file('draft')->move('skripsi3/ujiannaskah_skripsi', $draft);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        NaskahSkripsi::create([
-            'mahasiswa_id' => $request->iduser,
-            'judul' => $request->judul,
-            'penguji1' => $request->penguji1,
-            'penguji2' => $request->penguji2,
-            'penguji3' => $request->penguji3,
-            'tanggal' => $request->tanggal,
-            'sesi_id' => $request->sesi_id,
-            'ruangan_id' => $request->ruangan_id,
-            'draft' => $draft,
-        ]);
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+                            }
+        else{
+            $draft = Auth::user()->name. '_' .'Ujian Naskah Skripsi'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+            $request->file('draft')->move('skripsi3/ujiannaskah_skripsi', $draft);
 
-        Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('ujiannaskah-skripsi.index');
+            JadwalSidang::create([
+                'mahasiswa_id' => $request->iduser,
+                'judul' => $request->judul,
+                'slug' => Str::slug($request->judul),
+                'penguji1' => $request->penguji1,
+                'penguji2' => $request->penguji2,
+                'penguji3' => $request->penguji3,
+                'tanggal' => $request->tanggal,
+                'sesi_id' => $request->sesi_id,
+                'ruangan_id' => $request->ruangan_id,
+                'draft' => $draft,
+                'sidang_type' => $request->sidang_type
+            ]);
+
+            Alert::toast('Data Berhasil Dikirim', 'success');
+            return redirect()->route('ujiannaskah-skripsi.index');
+        }
+
+
     }
 
     /**
@@ -112,32 +138,92 @@ class NaskahSkripsiController extends Controller
      * @param  \App\Models\NaskahSkripsi  $naskahSkripsi
      * @return \Illuminate\Http\Response
      */
-    public function edit(NaskahSkripsi $naskahSkripsi)
+    public function edit($id)
     {
-        //
+        $naskahSkripsi = JadwalSidang::find($id);
+        try {
+            if($naskahSkripsi->mahasiswa_id != auth()->user()->mahasiswa->id){
+                    Alert::toast('Error', 'error');
+                    return redirect()->back();
+                }
+            } catch (Exception $e){
+                Alert::toast('Error', 'error');
+                return redirect()->back();
+            }
+        $dosen = Dosen::with('user')->get();
+        $ruangan = Ruangan::get();
+        $sesi = Sesi::get();
+
+        return view('mahasiswa.ujian_naskah.edit', compact('naskahSkripsi', 'ruangan', 'sesi', 'dosen'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\NaskahSkripsi  $naskahSkripsi
+     * @param  \App\Models\InternalProsedural  $internalProsedural
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, NaskahSkripsi $naskahSkripsi)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'ruangan_id' => 'required',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+            'draft' => 'file|mimes:pdf,doc,docx|max:10024'
+        ]);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
+
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->where('mahasiswa_id', '!=', Auth::user()->mahasiswa->id)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+        }else{
+            $internalProsedural = JadwalSidang::with('mahasiswa')->find($id);
+            $reqpro = $request->all();
+
+            if($draft = $request->file('draft')) {
+                File::delete('skripsi3/ujiannaskah_skripsi'.$internalProsedural->draft);
+                $destinationPath = 'skripsi3/ujiannaskah_skripsi';
+                $filename = $internalProsedural->mahasiswa->user->name. '_' .'Ujian Naskah Skripsi '. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+                $draft->move($destinationPath, $filename);
+                $reqpro['draft'] = "$filename";
+            }else{
+                unset($reqpro['draft']);
+            }
+
+            $internalProsedural->update($reqpro);
+
+            Alert::toast('Data Berhasil Diupdate', 'success');
+
+            return redirect()->route('ujiannaskah-skripsi.index');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\NaskahSkripsi  $naskahSkripsi
+     * @param  \App\Models\InternalProsedural  $internalProsedural
      * @return \Illuminate\Http\Response
      */
-    public function destroy(NaskahSkripsi $naskahSkripsi)
+    public function destroy($id)
     {
-        //
+        $internalProsedural = JadwalSidang::where('sidang_type', 'uns')->find($id);
+
+        $internalProsedural->delete();
+
+        Alert::toast('Data Berhasil Dihapus', 'success');
+        return redirect()->back();
+
     }
 
     public function sertifikat(Request $request)

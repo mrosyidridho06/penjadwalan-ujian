@@ -92,8 +92,124 @@
         </div>
     </section><!-- End Hero -->
     <main id="main">
+        <section id="service" class="service">
+            <header class="section-header">
+                <h2>Jadwal Sidang</h2>
+            </header>
+            <div class="container">
+                <div class="card-body table-responsive">
+                    <table class="table table-hover" id="skripsi">
+                        <thead>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Judul</th>
+                            <th>Sidang</th>
+                            <th>Dosen Pembimbing Utama</th>
+                            <th>Dosen Pembimbing Pendamping</th>
+                            <th>Tanggal</th>
+                            <th>Ruangan</th>
+                            <th>Jam</th>
+                        </thead>
+                        <tbody>
+                            @foreach ($mhs as $itemij)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $itemij->mahasiswa->user->name }}</td>
+                                    <td>{{  $itemij->judul  }}</td>
+                                    <td>
+                                        @if($itemij->sidang_type == 'internal_judul')
+                                        Internal Judul
+                                        @elseif ($itemij->sidang_type == 'metode_penelitian')
+                                        Metode Penelitian
+                                        @elseif ($itemij->sidang_type == 'tinjauan_pustaka')
+                                        Tinjauan Pustaka
+                                        @elseif ($itemij->sidang_type == 'naskah_proposal')
+                                        Naskah Proposal
+                                        @elseif ($itemij->sidang_type == 'prosedural')
+                                        Prosedural
+                                        @elseif ($itemij->sidang_type == 'kemajuan_penelitian')
+                                        Kemajuan Penelitian
+                                        @elseif ($itemij->sidang_type == 'kelayakan_data')
+                                        Kelayakan Data
+                                        @elseif ($itemij->sidang_type == 'naskah_skripsi')
+                                        Sidang Naskah Skripsi
+                                        @elseif ($itemij->sidang_type == 'uns')
+                                        Ujian Naskah Skripsi
+                                        @endif
+
+                                    </td>
+                                    <td>{{ $itemij->mahasiswa->dospemSatu->user->name }}</td>
+                                    <td>{{ $itemij->mahasiswa->dospemDua->user->name }}</td>
+                                    <td>{{ Carbon\Carbon::parse($itemij->tanggal)->translatedFormat('l, d F Y') }}</td>
+                                    <td>{{ $itemij->ruangan->name }}</td>
+                                    <td>{{ $itemij->sesi->jam_awal }} - {{ $itemij->sesi->jam_akhir }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <section id="service" class="service">
+            <header class="section-header">
+                <h2>Ujian Naskah Skripsi</h2>
+            </header>
+            <div class="container">
+                <div class="card-body table-responsive">
+                    <table class="table table-hover" id="skripsiuns">
+                        <thead>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>Judul</th>
+                            <th>Sidang</th>
+                            <th>Dosen Pembimbing Utama</th>
+                            <th>Dosen Pembimbing Pendamping</th>
+                            <th>Penguji</th>
+                            <th>Tanggal</th>
+                            <th>Ruangan</th>
+                            <th>Jam</th>
+                        </thead>
+                        <tbody>
+                            @foreach ($uns as $item)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $item->mahasiswa->user->name }}</td>
+                                    <td>{{  $item->judul  }}</td>
+                                    <td>
+                                        @if($item->sidang_type == 'uns')
+                                        Ujian Naskah Skripsi
+                                        @endif
+                                    </td>
+                                    <td>{{ $item->mahasiswa->dospemSatu->user->name }}</td>
+                                    <td>{{ $item->mahasiswa->dospemDua->user->name }}</td>
+                                    <td>
+                                        <ul>
+                                            <li>
+                                                <p>Penguji 1</p>
+                                                {{ $item->pengujiSatu->user->name }}
+                                            </li>
+                                            <li>
+                                                <p>Penguji 2</p>
+                                                {{ $item->pengujiDua->user->name }}
+                                            </li>
+                                            <li>
+                                                <p>Penguji 3</p>
+                                                {{ $item->pengujiTiga->user->name }}
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
+                                    <td>{{ $item->ruangan->name }}</td>
+                                    <td>{{ $item->sesi->jam_awal }} - {{ $item->sesi->jam_akhir }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
         <!-- ======= Features Section ======= -->
-        <section id="features" class="features">
+        {{-- <section id="features" class="features">
             <div class="container" data-aos="fade-up">
                 <header class="section-header">
                     <h2>Sidang Skripsi 1</h2>
@@ -460,7 +576,7 @@
                     </div>
                 </div><!-- End Feature Tabs -->
             </div>
-        </section><!-- End Features Section -->
+        </section><!-- End Features Section --> --}}
     </main><!-- End #main -->
 
 
@@ -546,56 +662,56 @@
     <script src="{{ asset('flex/js/main.js') }}"></script>
 
     <script>
-        $('#skripsi1-internaljudul').DataTable({
+        $('#skripsi').DataTable({
             responsive: true,
             dom: 'lBfrtip',
                 orderable: [
-                    [7, "asc"]
+                    [8, "asc"]
                 ],
                 // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
                 lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
+                    [ 5, 10, 25, 50, 100, 1000, -1 ],
+                    [ '5', '10', '25', '50', '100', '1000', 'All' ]
                 ],
                 buttons: [
                     {
                         extend: 'csv',
                         text: 'Export',
-                        title: 'Jadwal Sidang Internal Judul',
-                        filename: 'Jadwal Sidang Internal Judul',
+                        title: 'Jadwal Sidang ',
+                        filename: 'Jadwal Sidang ',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                         }
                     },
                     {
                         extend: 'pdf',
                         text: 'Pdf',
-                        title: 'Jadwal Sidang Internal Judul',
-                        filename: 'Jadwal Sidang Internal Judul',
+                        title: 'Jadwal Sidang ',
+                        filename: 'Jadwal Sidang ',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                         }
                     },
                     {
                         extend: 'print',
                         text: 'Print',
-                        title: 'Jadwal Sidang Internal Judul',
-                        filename: 'Jadwal Sidang Internal Judul',
+                        title: 'Jadwal Sidang ',
+                        filename: 'Jadwal Sidang ',
                         orientation: 'landscape',
                         pageSize: 'A4',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
                         }
                     },
                 ],
@@ -606,436 +722,16 @@
                 }
         });
 
-        $('#skripsi1-metpen').DataTable({
+        $('#skripsiuns').DataTable({
             responsive: true,
             dom: 'lBfrtip',
                 orderable: [
-                    [7, "asc"]
+                    [9, "asc"]
                 ],
                 // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
                 lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Metode Penelitian',
-                        filename: 'Jadwal Sidang Metode Penelitian',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Metode Penelitian',
-                        filename: 'Jadwal Sidang Metode Penelitian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Metode Penelitian',
-                        filename: 'Jadwal Sidang Metode Penelitian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi1-tipus').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Tinjauan Pustaka',
-                        filename: 'Jadwal Sidang Tinjauan Pustaka',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Tinjauan Pustaka',
-                        filename: 'Jadwal Sidang Tinjauan Pustaka',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Tinjauan Pustaka',
-                        filename: 'Jadwal Sidang Tinjauan Pustaka',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi1-pn').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Pembimbingan Naskah',
-                        filename: 'Jadwal Sidang Pembimbingan Naskah',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Pembimbingan Naskah',
-                        filename: 'Jadwal Sidang Pembimbingan Naskah',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Pembimbingan Naskah',
-                        filename: 'Jadwal Sidang Pembimbingan Naskah',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi2-prosedural').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Internal Prosedural',
-                        filename: 'Jadwal Sidang Internal Prosedural',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Internal Prosedural',
-                        filename: 'Jadwal Sidang Internal Prosedural',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Internal Prosedural',
-                        filename: 'Jadwal Sidang Internal Prosedural',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi2-kemajuan').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Kemajuan Penelitian',
-                        filename: 'Jadwal Sidang Kemajuan Penelitian',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Kemajuan Penelitian',
-                        filename: 'Jadwal Sidang Kemajuan Penelitian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Kemajuan Penelitian',
-                        filename: 'Jadwal Sidang Kemajuan Penelitian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi2-kelayakan').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Kelayakan Data',
-                        filename: 'Jadwal Sidang Kelayakan Data',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Kelayakan Data',
-                        filename: 'Jadwal Sidang Kelayakan Data',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Kelayakan Data',
-                        filename: 'Jadwal Sidang Kelayakan Data',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('#skripsi2-sidangnaskah').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [7, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
-                ],
-                buttons: [
-                    {
-                        extend: 'csv',
-                        text: 'Export',
-                        title: 'Jadwal Sidang Naskah Ujian',
-                        filename: 'Jadwal Sidang Naskah Ujian',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'Pdf',
-                        title: 'Jadwal Sidang Naskah Ujian',
-                        filename: 'Jadwal Sidang Naskah Ujian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        title: 'Jadwal Sidang Naskah Ujian',
-                        filename: 'Jadwal Sidang Naskah Ujian',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            modifier: {
-                                page: 'all'
-                            },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
-                        }
-                    },
-                ],
-                language: {
-                    "searchPlaceholder": "Cari Jadwal",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "emptyTable": "Tidak terdapat data di tabel"
-                }
-        });
-
-        $('.table-skripsi3').DataTable({
-            responsive: true,
-            dom: 'lBfrtip',
-                orderable: [
-                    [10, "asc"]
-                ],
-                // buttons: ['copy', 'csv', 'excel', 'pdf', 'print', 'colvis'],
-                lengthMenu: [
-                    [ 10, 25, 50, 100, 1000, -1 ],
-                    [ '10', '25', '50', '100', '1000', 'All' ]
+                    [ 5, 10, 25, 50, 100, 1000, -1 ],
+                    [ '5','10', '25', '50', '100', '1000', 'All' ]
                 ],
                 buttons: [
                     {
@@ -1047,35 +743,35 @@
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
                         }
                     },
                     {
                         extend: 'pdf',
                         text: 'Pdf',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
                         title: 'Jadwal Ujian Naskah Skripsi',
                         filename: 'Jadwal Ujian Naskah Skripsi',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
                         }
                     },
                     {
                         extend: 'print',
                         text: 'Print',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
                         title: 'Jadwal Ujian Naskah Skripsi',
                         filename: 'Jadwal Ujian Naskah Skripsi',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
                         exportOptions: {
                             modifier: {
                                 page: 'all'
                             },
-                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                            columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
                         }
                     },
                 ],

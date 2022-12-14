@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JadwalSidang;
+use Exception;
 use Carbon\Carbon;
 use App\Models\Sesi;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\MetodePenelitian;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class MetodePenelitianController extends Controller
@@ -21,7 +25,8 @@ class MetodePenelitianController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $metpen = MetodePenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $metpen = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->where('sidang_type', 'metode_penelitian')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -31,9 +36,9 @@ class MetodePenelitianController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $metpen = MetodePenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $metpen = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->where('sidang_type', 'metode_penelitian')->get();
         }else{
-            $metpen = MetodePenelitian::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+            $metpen = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->where('sidang_type', 'metode_penelitian')->get();
         }
 
         return view('mahasiswa.metode_penelitian.index', compact('metpen'));
@@ -69,20 +74,41 @@ class MetodePenelitianController extends Controller
             'ruangan_id' => 'required',
         ]);
 
-        $draft = Auth::user()->name. '_' .'Ujian Metode Penelitian'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
-        $request->file('draft')->move('skripsi1/metode_penelitian', $draft);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        MetodePenelitian::create([
-            'mahasiswa_id' => $request->iduser,
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'sesi_id' => $request->sesi_id,
-            'ruangan_id' => $request->ruangan_id,
-            'draft' => $draft,
-        ]);
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+                            }
+        else{
+            $draft = Auth::user()->name. '_' .'Ujian Metode Penelitian'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+            $request->file('draft')->move('skripsi1/metode_penelitian', $draft);
 
-        Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('metode-penelitian.index');
+            JadwalSidang::create([
+                'mahasiswa_id' => $request->iduser,
+                'judul' => $request->judul,
+                'slug' => Str::slug($request->judul),
+                'tanggal' => $request->tanggal,
+                'sesi_id' => $request->sesi_id,
+                'ruangan_id' => $request->ruangan_id,
+                'sidang_type' => $request->sidang_type,
+                'draft' => $draft,
+            ]);
+
+            Alert::toast('Data Berhasil Dikirim', 'success');
+            return redirect()->route('metode-penelitian.index');
+        }
+
+
     }
 
     /**
@@ -102,9 +128,21 @@ class MetodePenelitianController extends Controller
      * @param  \App\Models\MetodePenelitian  $metodePenelitian
      * @return \Illuminate\Http\Response
      */
-    public function edit(MetodePenelitian $metodePenelitian)
+    public function edit($id)
     {
-        //
+        $metodePenelitian = JadwalSidang::find($id);
+        try {
+            if($metodePenelitian->mahasiswa_id != auth()->user()->mahasiswa->id){
+                Alert::toast('Error', 'error');
+                return redirect()->back();
+            }
+        } catch (Exception $e){
+            Alert::toast('Error', 'error');
+            return redirect()->back();
+    }
+    $ruangan = Ruangan::get();
+    $sesi = Sesi::get();
+    return view('mahasiswa.metode_penelitian.edit', compact('metodePenelitian', 'ruangan', 'sesi'));
     }
 
     /**
@@ -114,9 +152,49 @@ class MetodePenelitianController extends Controller
      * @param  \App\Models\MetodePenelitian  $metodePenelitian
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MetodePenelitian $metodePenelitian)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'ruangan_id' => 'required',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+            'draft' => 'file|mimes:pdf,doc,docx|max:10024'
+        ]);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
+
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->where('mahasiswa_id', '!=', Auth::user()->mahasiswa->id)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+        }else{
+            $metodePenelitian = JadwalSidang::with('mahasiswa')->find($id);
+            $reqmetpen = $request->all();
+
+            if($draft = $request->file('draft')) {
+                File::delete('skripsi1/metode_penelitian'.$metodePenelitian->draft);
+                $destinationPath = 'skripsi1/metode_penelitian';
+                $filename = $metodePenelitian->mahasiswa->user->name. '_' .'Sidang Metode Penelitian'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+                $draft->move($destinationPath, $filename);
+                $reqmetpen['draft'] = "$filename";
+            }else{
+                unset($reqmetpen['draft']);
+            }
+
+            $metodePenelitian->update($reqmetpen);
+
+            Alert::toast('Data Berhasil Diupdate', 'success');
+
+            return redirect()->route('metode-penelitian.index');
+        }
     }
 
     /**
@@ -125,9 +203,14 @@ class MetodePenelitianController extends Controller
      * @param  \App\Models\MetodePenelitian  $metodePenelitian
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MetodePenelitian $metodePenelitian)
+    public function destroy($id)
     {
-        //
+        $metodePenelitian = JadwalSidang::where('sidang_type', 'metode_penelitian')->find($id);
+
+        $metodePenelitian->delete();
+
+        Alert::toast('Data Berhasil Dihapus', 'success');
+        return redirect()->back();
     }
 
     public function berita(Request $request)

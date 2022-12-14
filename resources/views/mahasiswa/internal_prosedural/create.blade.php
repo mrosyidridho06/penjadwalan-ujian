@@ -28,6 +28,7 @@
                 <label for="jurusan">Nama</label>
                 <input type="text" class="form-control" name="nama" value="{{ Auth::user()->name }}" readonly>
                 <br>
+                <input type="hidden" name="sidang_type" value="prosedural">
                 <label for="judul">Judul</label>
                 <textarea class="form-control" name="judul">{{ old('judul') }}</textarea>
                 @error('judul')
@@ -79,8 +80,8 @@
                 @enderror
                 <br>
                 <label for="draft">Draft</label>
-                <input type="file" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" name="draft">
-                <div class="form-text text-muted">The image must have a maximum size of 10MB</div>
+                <input type="file" accept="application/pdf,.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" name="draft" required>
+                <div class="form-text text-muted">*The draft must have a maximum size of 10MB</div>
                 @error('draft')
                     <div class="alert alert-danger mt-2">
                         {{ $message }}

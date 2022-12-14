@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Sesi;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Str;
+use App\Models\JadwalSidang;
 use Illuminate\Http\Request;
 use App\Models\TinjauanPustaka;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class TinjauanPustakaController extends Controller
@@ -21,7 +25,8 @@ class TinjauanPustakaController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $tipus = TinjauanPustaka::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $tipus = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->where('sidang_type', 'tinjauan_pustaka')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -31,9 +36,9 @@ class TinjauanPustakaController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $tipus = TinjauanPustaka::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $tipus = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->where('sidang_type', 'tinjauan_pustaka')->get();
         }else{
-            $tipus = TinjauanPustaka::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+            $tipus = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->where('sidang_type', 'tinjauan_pustaka')->get();
         }
 
         return view('mahasiswa.tinjauan_pustaka.index', compact('tipus'));
@@ -69,20 +74,39 @@ class TinjauanPustakaController extends Controller
             'ruangan_id' => 'required',
         ]);
 
-        $draft = Auth::user()->name. '_' .'Ujian Tinjauan Pustaka'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
-        $request->file('draft')->move('skripsi1/tinjauan_pustaka', $draft);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        TinjauanPustaka::create([
-            'mahasiswa_id' => $request->iduser,
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'sesi_id' => $request->sesi_id,
-            'ruangan_id' => $request->ruangan_id,
-            'draft' => $draft,
-        ]);
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+                            }
+        else{
+            $draft = Auth::user()->name. '_' .'Ujian Tinjauan Pustaka'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+            $request->file('draft')->move('skripsi1/tinjauan_pustaka', $draft);
 
-        Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('tinjauan-pustaka.index');
+            $itj = JadwalSidang::create([
+                'mahasiswa_id' => $request->iduser,
+                'judul' => $request->judul,
+                'slug' => Str::slug($request->judul),
+                'tanggal' => $request->tanggal,
+                'sesi_id' => $request->sesi_id,
+                'ruangan_id' => $request->ruangan_id,
+                'sidang_type' => $request->sidang_type,
+                'draft' => $draft,
+            ]);
+
+            Alert::toast('Data Berhasil Dikirim', 'success');
+            return redirect()->route('tinjauan-pustaka.index');
+        }
     }
 
     /**
@@ -102,9 +126,22 @@ class TinjauanPustakaController extends Controller
      * @param  \App\Models\TinjauanPustaka  $tinjauanPustaka
      * @return \Illuminate\Http\Response
      */
-    public function edit(TinjauanPustaka $tinjauanPustaka)
+    public function edit($id)
     {
-        //
+        $tinjauanPustaka = JadwalSidang::where('sidang_type', 'tinjauan_pustaka')->find($id);
+
+        try {
+            if($tinjauanPustaka->mahasiswa_id != auth()->user()->mahasiswa->id){
+                Alert::toast('Error', 'error');
+                return redirect()->back();
+            }
+        } catch (Exception $e){
+            Alert::toast('Error', 'error');
+            return redirect()->back();
+        }
+        $ruangan = Ruangan::get();
+        $sesi = Sesi::get();
+        return view('mahasiswa.tinjauan_pustaka.edit', compact('tinjauanPustaka', 'ruangan', 'sesi'));
     }
 
     /**
@@ -114,9 +151,49 @@ class TinjauanPustakaController extends Controller
      * @param  \App\Models\TinjauanPustaka  $tinjauanPustaka
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TinjauanPustaka $tinjauanPustaka)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'ruangan_id' => 'required',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+            'draft' => 'file|mimes:pdf,doc,docx|max:10024'
+        ]);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
+
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->where('mahasiswa_id', '!=', Auth::user()->mahasiswa->id)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+        }else{
+            $tinjauanPustaka = JadwalSidang::with('mahasiswa')->find($id);
+            $reqtipus = $request->all();
+
+            if($draft = $request->file('draft')) {
+                File::delete('skripsi1/tinjauan_pustaka'.$tinjauanPustaka->draft);
+                $destinationPath = 'skripsi1/tinjauan_pustaka';
+                $filename = $tinjauanPustaka->mahasiswa->user->name. '_' .'Internal Tinjauan Pustaka'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+                $draft->move($destinationPath, $filename);
+                $reqtipus['draft'] = "$filename";
+            }else{
+                unset($reqtipus['draft']);
+            }
+
+            $tinjauanPustaka->update($reqtipus);
+
+            Alert::toast('Data Berhasil Diupdate', 'success');
+
+            return redirect()->route('tinjauan-pustaka.index');
+        }
     }
 
     /**
@@ -125,9 +202,13 @@ class TinjauanPustakaController extends Controller
      * @param  \App\Models\TinjauanPustaka  $tinjauanPustaka
      * @return \Illuminate\Http\Response
      */
-    public function destroy(TinjauanPustaka $tinjauanPustaka)
+    public function destroy($id)
     {
-        //
+        $tinjauanPustaka = JadwalSidang::where('sidang_type', 'tinjauan_pustaka')->find($id);
+
+        $tinjauanPustaka->delete();
+        Alert::toast('Data Berhasil Dihapus', 'success');
+        return redirect()->back();
     }
 
     public function berita(Request $request)

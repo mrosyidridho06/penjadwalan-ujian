@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InternalJudul;
 use App\Models\InternalProsedural;
+use App\Models\JadwalSidang;
 use App\Models\KelayakanData;
 use App\Models\KemajuanPenelitian;
+use App\Models\Mahasiswa;
 use App\Models\MetodePenelitian;
 use App\Models\NaskahSkripsi;
 use App\Models\PembimbinganNaskah;
@@ -27,6 +29,9 @@ class HomeController extends Controller
         $sidangnaskah = SidangNaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->get();
         $ujiannaskah = NaskahSkripsi::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->get();
 
-        return view('home', compact('InternalJudul', 'metpen', 'tipus', 'pn', 'prosedural', 'kemajuan', 'kelayakan', 'sidangnaskah', 'ujiannaskah'));
+        $mhs = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->where('sidang_type', '!=', 'uns')->get();
+        $uns = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan', 'pengujiSatu.user', 'pengujiDua.user', 'pengujiTiga.user')->where('sidang_type', '=', 'uns')->get();
+
+        return view('home', compact('InternalJudul', 'metpen', 'tipus', 'pn', 'prosedural', 'kemajuan', 'kelayakan', 'sidangnaskah', 'ujiannaskah', 'mhs', 'uns'));
     }
 }

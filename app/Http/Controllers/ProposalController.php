@@ -20,11 +20,10 @@ class ProposalController extends Controller
     public function index()
     {
         $sempro = Proposal::get();
-        $jadwal = Jadwal::get();
         $ruang = Ruangan::get();
         $dosen = Dosen::with('user')->get();
 
-        return view('mahasiswa.proposal.index', compact('sempro', 'dosen', 'jadwal', 'ruang'));
+        return view('mahasiswa.proposal.index', compact('sempro', 'dosen', 'ruang'));
     }
 
     /**
@@ -45,6 +44,7 @@ class ProposalController extends Controller
      */
     public function store(Request $request)
     {
+        
         $request->validate([
             'iduser' => 'required',
             'judul' => 'required',

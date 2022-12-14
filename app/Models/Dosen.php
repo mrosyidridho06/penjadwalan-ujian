@@ -27,9 +27,9 @@ class Dosen extends Model
         return $this->hasMany(Mahasiswa::class);
     }
 
-    public function naskahSkripsi()
+    public function jadwalSidang()
     {
-        return $this->hasMany(NaskahSkripsi::class);
+        return $this->hasMany(JadwalSidang::class);
     }
 
 

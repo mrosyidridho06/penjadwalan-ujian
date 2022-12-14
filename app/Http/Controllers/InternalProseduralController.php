@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Sesi;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Str;
+use App\Models\JadwalSidang;
 use Illuminate\Http\Request;
 use App\Models\InternalProsedural;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class InternalProseduralController extends Controller
@@ -21,7 +25,8 @@ class InternalProseduralController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $prosedural = InternalProsedural::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $prosedural = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->where('sidang_type', 'prosedural')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -31,9 +36,9 @@ class InternalProseduralController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $prosedural = InternalProsedural::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $prosedural = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->where('sidang_type', 'prosedural')->get();
         }else{
-            $prosedural = InternalProsedural::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+            $prosedural = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->where('sidang_type', 'prosedural')->get();
         }
 
         return view('mahasiswa.internal_prosedural.index', compact('prosedural'));
@@ -69,20 +74,40 @@ class InternalProseduralController extends Controller
             'ruangan_id' => 'required',
         ]);
 
-        $draft = Auth::user()->name. '_' .'Sidang Internal Prosedural'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
-        $request->file('draft')->move('skripsi2/internal_prosedural', $draft);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
 
-        InternalProsedural::create([
-            'mahasiswa_id' => $request->iduser,
-            'judul' => $request->judul,
-            'tanggal' => $request->tanggal,
-            'sesi_id' => $request->sesi_id,
-            'ruangan_id' => $request->ruangan_id,
-            'draft' => $draft,
-        ]);
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+                            }
+        else{
+            $draft = Auth::user()->name. '_' .'Internal Prosedural'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+            $request->file('draft')->move('skripsi2/internal_prosedural', $draft);
 
-        Alert::toast('Data Berhasil Dikirim', 'success');
-        return redirect()->route('internal-prosedural.index');
+            $itj = JadwalSidang::create([
+                'mahasiswa_id' => $request->iduser,
+                'judul' => $request->judul,
+                'slug' => Str::slug($request->judul),
+                'tanggal' => $request->tanggal,
+                'sesi_id' => $request->sesi_id,
+                'ruangan_id' => $request->ruangan_id,
+                'sidang_type' => $request->sidang_type,
+                'draft' => $draft,
+            ]);
+
+            Alert::toast('Data Berhasil Dikirim', 'success');
+            return redirect()->route('internal-prosedural.index');
+        }
+
     }
 
     /**
@@ -102,9 +127,22 @@ class InternalProseduralController extends Controller
      * @param  \App\Models\InternalProsedural  $internalProsedural
      * @return \Illuminate\Http\Response
      */
-    public function edit(InternalProsedural $internalProsedural)
+    public function edit($id)
     {
-        //
+        $internalProsedural = JadwalSidang::find($id);
+        try {
+                if($internalProsedural->mahasiswa_id != auth()->user()->mahasiswa->id){
+                    Alert::toast('Error', 'error');
+                    return redirect()->back();
+                }
+            } catch (Exception $e){
+                Alert::toast('Error', 'error');
+                return redirect()->back();
+        }
+        $ruangan = Ruangan::get();
+        $sesi = Sesi::get();
+
+        return view('mahasiswa.internal_prosedural.edit', compact('internalProsedural', 'ruangan', 'sesi'));
     }
 
     /**
@@ -114,9 +152,49 @@ class InternalProseduralController extends Controller
      * @param  \App\Models\InternalProsedural  $internalProsedural
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, InternalProsedural $internalProsedural)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'ruangan_id' => 'required',
+            'sesi_id' => 'required',
+            'tanggal' => 'required',
+            'draft' => 'file|mimes:pdf,doc,docx|max:10024'
+        ]);
+        $ru = $request->ruangan_id;
+        $se = $request->sesi_id;
+
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                            ->where('tanggal', '=', $request->tanggal)
+                            ->where('mahasiswa_id', '!=', Auth::user()->mahasiswa->id)
+                            ->whereHas('sesi', function($q) use($se){
+                                $q->where('id', '=', $se);
+                            })
+                            ->whereHas('ruangan', function($q) use($ru){
+                                $q->where('id', '=', $ru);
+                            })
+                            ->exists()){
+                                Alert::toast('Jadwal Sudah Terisi', 'error');
+                                return redirect()->back()->withInput();
+        }else{
+            $internalProsedural = JadwalSidang::with('mahasiswa')->find($id);
+            $reqpro = $request->all();
+
+            if($draft = $request->file('draft')) {
+                File::delete('skripsi2/internal_prosedural'.$internalProsedural->draft);
+                $destinationPath = 'skripsi2/internal_prosedural';
+                $filename = $internalProsedural->mahasiswa->user->name. '_' .'Internal Prosedural '. '_' .date('d-m-Y'). '.' . $request->draft->extension();
+                $draft->move($destinationPath, $filename);
+                $reqpro['draft'] = "$filename";
+            }else{
+                unset($reqpro['draft']);
+            }
+
+            $internalProsedural->update($reqpro);
+
+            Alert::toast('Data Berhasil Diupdate', 'success');
+
+            return redirect()->route('internal-prosedural.index');
+        }
     }
 
     /**
@@ -125,9 +203,15 @@ class InternalProseduralController extends Controller
      * @param  \App\Models\InternalProsedural  $internalProsedural
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InternalProsedural $internalProsedural)
+    public function destroy($id)
     {
-        //
+        $internalProsedural = JadwalSidang::where('sidang_type', 'prosedural')->find($id);
+
+        $internalProsedural->delete();
+
+        Alert::toast('Data Berhasil Dihapus', 'success');
+        return redirect()->back();
+
     }
 
     public function berita(Request $request)

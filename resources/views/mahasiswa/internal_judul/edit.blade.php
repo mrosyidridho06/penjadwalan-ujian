@@ -51,7 +51,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Kirim</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </form>
         <a href="{{ route('internal-judul.index') }}" class="btn btn-secondary">Kembali</a>
     </div>

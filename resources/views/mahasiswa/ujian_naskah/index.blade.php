@@ -29,6 +29,7 @@
                             <th>Tanggal</th>
                             <th>Sesi</th>
                             <th>Draft</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -57,6 +58,21 @@
                             <td>{{ Carbon\Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                             <td>{{ $item->sesi->sesi }} {{ $item->sesi->jam_awal }}-{{ $item->sesi->jam_akhir }}</td>
                             <td><a href="{{ asset("/skripsi3/ujiannaskah_skripsi/" . $item->draft) }}" target="_blank"> {{ $item->draft }}</a></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fa fa-cog"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-primary">
+                                        <a class="dropdown-item" href="{{route('ujiannaskah-skripsi.edit',$item->id)}}"><i class="fa fa-edit"></i> Edit</a>
+                                        <form action="{{route('ujiannaskah-skripsi.destroy', $item->id)}}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')" class="dropdown-item btn"><i class="fa fa-trash"></i> Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
                             {{-- <td>
                                 <form action="{{ route('sertifikat.interjudul') }}" method="POST">
                                     @csrf

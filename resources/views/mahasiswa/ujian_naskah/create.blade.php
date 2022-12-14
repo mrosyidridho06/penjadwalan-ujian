@@ -22,6 +22,7 @@
                 <input type="hidden" value="{{ Auth::user()->mahasiswa->id }}" name="iduser">
                 <label for="jurusan">Nama</label>
                 <input type="text" class="form-control" name="nama" value="{{ Auth::user()->name }}" readonly>
+                <input type="hidden" name="sidang_type" value="uns">
                 <br>
                 <label for="judul">Judul</label>
                 <textarea class="form-control" name="judul" required>{{ old('judul') }}</textarea>

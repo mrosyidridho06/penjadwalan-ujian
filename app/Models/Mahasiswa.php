@@ -28,6 +28,11 @@ class Mahasiswa extends Model
         return $this->belongsTo(Dosen::class, 'dospem_dua');
     }
 
+    public function jadwalSidang()
+    {
+        return $this->hasMany(JadwalSidang::class);
+    }
+
     public function internalJudul()
     {
         return $this->hasMany(internalJudul::class);

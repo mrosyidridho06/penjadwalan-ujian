@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Sesi;
 use App\Models\Ruangan;
 use setasign\Fpdi\Fpdi;
+use Illuminate\Support\Str;
+use App\Models\JadwalSidang;
 use Illuminate\Http\Request;
 use App\Models\InternalJudul;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +28,8 @@ class InternalJudulController extends Controller
     public function index()
     {
         if(auth()->user()->role == 'dosen'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+            $interjudul = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
+                                        ->where('sidang_type', 'internal_judul')
                                         ->whereHas('mahasiswa', function ($query){
                                             $query->where('dospem_satu', Auth::user()->dosen->id);
                                         })
@@ -35,9 +39,9 @@ class InternalJudulController extends Controller
                                         ->orderBy('id', 'asc')
                                         ->get();
         }elseif(auth()->user()->role == 'mahasiswa'){
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->get();
+            $interjudul = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->where('mahasiswa_id', auth()->user()->mahasiswa->id)->where('sidang_type', 'internal_judul')->get();
         }else{
-            $interjudul = InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->get();
+            $interjudul = JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')->orderBy('id', 'asc')->where('sidang_type', 'internal_judul')->get();
         }
 
         return view('mahasiswa.internal_judul.index', compact('interjudul'));
@@ -77,7 +81,7 @@ class InternalJudulController extends Controller
         $ru = $request->ruangan_id;
         $se = $request->sesi_id;
 
-        if(InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
                             ->where('tanggal', '=', $request->tanggal)
                             ->whereHas('sesi', function($q) use($se){
                                 $q->where('id', '=', $se);
@@ -90,15 +94,17 @@ class InternalJudulController extends Controller
                                 return redirect()->back()->withInput();
                             }
         else{
-            $draft = Auth::user()->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+            $draft = Auth::user()->name. '_' .'Internal Judul'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
             $request->file('draft')->move('skripsi1/internal_judul', $draft);
 
-            $itj = InternalJudul::create([
+            $itj = JadwalSidang::create([
                 'mahasiswa_id' => $request->iduser,
                 'judul' => $request->judul,
+                'slug' => Str::slug($request->judul),
                 'tanggal' => $request->tanggal,
                 'sesi_id' => $request->sesi_id,
                 'ruangan_id' => $request->ruangan_id,
+                'sidang_type' => $request->sidang_type,
                 'draft' => $draft,
             ]);
 
@@ -125,16 +131,23 @@ class InternalJudulController extends Controller
      * @param  \App\Models\InternalJudul  $internalJudul
      * @return \Illuminate\Http\Response
      */
-    public function edit(InternalJudul $internalJudul)
+    public function edit($id)
     {
-        if($internalJudul->mahasiswa_id != auth()->user()->mahasiswa->id){
-            return redirect()->back();
+        $internalJudul = JadwalSidang::find($id);
+        try {
+                if($internalJudul->mahasiswa_id != auth()->user()->mahasiswa->id){
+                    Alert::toast('Error', 'error');
+                    return redirect()->back();
+                }
+            } catch (Exception $e){
+                Alert::toast('Error', 'error');
+                return redirect()->back();
         }
-
         $ruangan = Ruangan::get();
         $sesi = Sesi::get();
 
         return view('mahasiswa.internal_judul.edit', compact('internalJudul', 'ruangan', 'sesi'));
+
     }
 
     public function editDosen($id)
@@ -164,8 +177,10 @@ class InternalJudulController extends Controller
         $ru = $request->ruangan_id;
         $se = $request->sesi_id;
 
-        if(InternalJudul::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'statusInternalJudul', 'sesi', 'ruangan')
+        if(JadwalSidang::with('mahasiswa', 'mahasiswa.dospemSatu.user','mahasiswa.dospemDua.user', 'sesi', 'ruangan')
                             ->where('tanggal', '=', $request->tanggal)
+                            // ->where('sidang_type', 'internal_judul')
+                            ->where('mahasiswa_id', '!=', Auth::user()->mahasiswa->id)
                             ->whereHas('sesi', function($q) use($se){
                                 $q->where('id', '=', $se);
                             })
@@ -176,13 +191,13 @@ class InternalJudulController extends Controller
                                 Alert::toast('Jadwal Sudah Terisi', 'error');
                                 return redirect()->back()->withInput();
         }else{
-            $internalJudul = InternalJudul::with('mahasiswa')->find($id);
+            $internalJudul = JadwalSidang::with('mahasiswa')->find($id);
             $interjudul = $request->all();
 
             if($draft = $request->file('draft')) {
                 File::delete('skripsi1/internal_judul'.$internalJudul->draft);
                 $destinationPath = 'skripsi1/internal_judul';
-                $filename = $internalJudul->mahasiswa->user->name. '_' .'Sidang Internal Judul'. '_' .date('Y-m-d'). '.' . $request->draft->extension();
+                $filename = $internalJudul->mahasiswa->user->name. '_' .'Internal Judul'. '_' .date('d-m-Y'). '.' . $request->draft->extension();
                 $draft->move($destinationPath, $filename);
                 $interjudul['draft'] = "$filename";
             }else{
@@ -217,9 +232,14 @@ class InternalJudulController extends Controller
      * @param  \App\Models\InternalJudul  $internalJudul
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InternalJudul $internalJudul)
+    public function destroy($id)
     {
-        //
+        $internalJudul = JadwalSidang::where('sidang_type', 'internal_judul')->find($id);
+
+        $internalJudul->delete();
+        Alert::toast('Data Berhasil Dihapus', 'success');
+        return redirect()->back();
+
     }
 
     public function sertifikat(Request $request)
