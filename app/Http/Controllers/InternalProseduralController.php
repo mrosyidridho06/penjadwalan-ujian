@@ -129,20 +129,19 @@ class InternalProseduralController extends Controller
      */
     public function edit($id)
     {
-        $internalProsedural = JadwalSidang::find($id);
+        $internalProsedural = JadwalSidang::where('sidang_type', 'prosedural')->find($id);
         try {
-                if($internalProsedural->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+            $internalProsedural->mahasiswa_id = auth()->user()->mahasiswa->id;
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+
+            return view('mahasiswa.internal_prosedural.edit', compact('internalProsedural', 'ruangan', 'sesi'));
+
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.internal_prosedural.edit', compact('internalProsedural', 'ruangan', 'sesi'));
     }
 
     /**

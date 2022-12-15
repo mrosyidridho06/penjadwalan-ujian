@@ -125,20 +125,18 @@ class KelayakanDataController extends Controller
      */
     public function edit($id)
     {
-        $kelayakanData = JadwalSidang::find($id);
+        $kelayakanData = JadwalSidang::where('sidang_type', 'kelayakan_data')->find($id);
         try {
-                if($kelayakanData->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+            $kelayakanData->mahasiswa_id = auth()->user()->mahasiswa->id;
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+
+            return view('mahasiswa.kelayakan_data.edit', compact('kelayakanData', 'ruangan', 'sesi'));
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.kelayakan_data.edit', compact('kelayakanData', 'ruangan', 'sesi'));
     }
 
     /**

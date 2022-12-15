@@ -130,19 +130,18 @@ class MetodePenelitianController extends Controller
      */
     public function edit($id)
     {
-        $metodePenelitian = JadwalSidang::find($id);
+        $metodePenelitian = JadwalSidang::where('sidang_type', 'metode_penelitian')->find($id);
         try {
-            if($metodePenelitian->mahasiswa_id != auth()->user()->mahasiswa->id){
+                $metodePenelitian->mahasiswa_id = auth()->user()->mahasiswa->id;
+                $ruangan = Ruangan::get();
+                $sesi = Sesi::get();
+                return view('mahasiswa.metode_penelitian.edit', compact('metodePenelitian', 'ruangan', 'sesi'));
+
+            } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
-            }
-        } catch (Exception $e){
-            Alert::toast('Error', 'error');
-            return redirect()->back();
-    }
-    $ruangan = Ruangan::get();
-    $sesi = Sesi::get();
-    return view('mahasiswa.metode_penelitian.edit', compact('metodePenelitian', 'ruangan', 'sesi'));
+        }
+
     }
 
     /**

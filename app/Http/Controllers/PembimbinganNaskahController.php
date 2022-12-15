@@ -124,18 +124,17 @@ class PembimbinganNaskahController extends Controller
     {
         $naskahProposal = JadwalSidang::where('sidang_type', 'naskah_proposal')->find($id);
         try {
-                if($naskahProposal->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+                $naskahProposal->mahasiswa_id = auth()->user()->mahasiswa->id;
+                $ruangan = Ruangan::get();
+                $sesi = Sesi::get();
+
+                return view('mahasiswa.pembimbingan_naskah.edit', compact('naskahProposal', 'ruangan', 'sesi'));
+
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.pembimbingan_naskah.edit', compact('naskahProposal', 'ruangan', 'sesi'));
     }
 
     public function update(Request $request, $id)

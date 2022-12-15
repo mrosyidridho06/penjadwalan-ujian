@@ -131,17 +131,16 @@ class TinjauanPustakaController extends Controller
         $tinjauanPustaka = JadwalSidang::where('sidang_type', 'tinjauan_pustaka')->find($id);
 
         try {
-            if($tinjauanPustaka->mahasiswa_id != auth()->user()->mahasiswa->id){
-                Alert::toast('Error', 'error');
-                return redirect()->back();
-            }
+            $tinjauanPustaka->mahasiswa_id != auth()->user()->mahasiswa->id;
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+            return view('mahasiswa.tinjauan_pustaka.edit', compact('tinjauanPustaka', 'ruangan', 'sesi'));
+            
         } catch (Exception $e){
             Alert::toast('Error', 'error');
             return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
-        return view('mahasiswa.tinjauan_pustaka.edit', compact('tinjauanPustaka', 'ruangan', 'sesi'));
+
     }
 
     /**

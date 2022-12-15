@@ -126,20 +126,18 @@ class KemajuanPenelitianController extends Controller
      */
     public function edit($id)
     {
-        $kemajuanPenelitian = JadwalSidang::find($id);
+        $kemajuanPenelitian = JadwalSidang::where('sidang_type', 'kemajuan_penelitian')->find($id);
         try {
-                if($kemajuanPenelitian->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+            $kemajuanPenelitian->mahasiswa_id = auth()->user()->mahasiswa->id;
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+
+            return view('mahasiswa.kemajuan_penelitian.edit', compact('kemajuanPenelitian', 'ruangan', 'sesi'));
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.kemajuan_penelitian.edit', compact('kemajuanPenelitian', 'ruangan', 'sesi'));
     }
 
     /**

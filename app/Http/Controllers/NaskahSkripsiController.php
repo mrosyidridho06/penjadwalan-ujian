@@ -140,21 +140,20 @@ class NaskahSkripsiController extends Controller
      */
     public function edit($id)
     {
-        $naskahSkripsi = JadwalSidang::find($id);
+        $naskahSkripsi = JadwalSidang::where('sidang_type', 'uns')->find($id);
         try {
-            if($naskahSkripsi->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+            $naskahSkripsi->mahasiswa_id = auth()->user()->mahasiswa->id;
+            $dosen = Dosen::with('user')->get();
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+
+            return view('mahasiswa.ujian_naskah.edit', compact('naskahSkripsi', 'ruangan', 'sesi', 'dosen'));
+
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
             }
-        $dosen = Dosen::with('user')->get();
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.ujian_naskah.edit', compact('naskahSkripsi', 'ruangan', 'sesi', 'dosen'));
     }
 
     /**

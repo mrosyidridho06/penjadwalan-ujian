@@ -133,20 +133,19 @@ class InternalJudulController extends Controller
      */
     public function edit($id)
     {
-        $internalJudul = JadwalSidang::find($id);
+        $internalJudul = JadwalSidang::where('sidang_type', 'internal_judul')->find($id);
         try {
-                if($internalJudul->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+
+            $internalJudul->mahasiswa_id = auth()->user()->mahasiswa->id;
+            $ruangan = Ruangan::get();
+            $sesi = Sesi::get();
+            return view('mahasiswa.internal_judul.edit', compact('internalJudul', 'ruangan', 'sesi'));
+
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.internal_judul.edit', compact('internalJudul', 'ruangan', 'sesi'));
 
     }
 

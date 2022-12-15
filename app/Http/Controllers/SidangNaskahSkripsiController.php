@@ -124,18 +124,16 @@ class SidangNaskahSkripsiController extends Controller
     {
         $sidangNaskahSkripsi = JadwalSidang::where('sidang_type', 'naskah_skripsi')->find($id);
         try {
-                if($sidangNaskahSkripsi->mahasiswa_id != auth()->user()->mahasiswa->id){
-                    Alert::toast('Error', 'error');
-                    return redirect()->back();
-                }
+                $sidangNaskahSkripsi->mahasiswa_id = auth()->user()->mahasiswa->id;
+                $ruangan = Ruangan::get();
+                $sesi = Sesi::get();
+
+                return view('mahasiswa.sidangnaskah.edit', compact('sidangNaskahSkripsi', 'ruangan', 'sesi'));
             } catch (Exception $e){
                 Alert::toast('Error', 'error');
                 return redirect()->back();
         }
-        $ruangan = Ruangan::get();
-        $sesi = Sesi::get();
 
-        return view('mahasiswa.sidangnaskah.edit', compact('sidangNaskahSkripsi', 'ruangan', 'sesi'));
     }
 
     /**
